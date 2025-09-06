@@ -132,6 +132,14 @@ const userController = {
       return res.status(401).json({ message: "Nome ou senha inválida", type: "outros" });
     });
   },
+
+  update: (req, res) => {
+    const { updatedByIdUser,id,name,login,password,level,status } = req.body;
+
+    return res.json({ updatedByIdUser,id,name,login,password,level,status });
+
+  },
+
 };
 
 export default userController;

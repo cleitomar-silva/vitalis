@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'API rodando! Bem-vindo à e-flow.' });
+  res.json({ message: 'API rodando! Bem-vindo' });
 });
 app.use('/users', userRoutes);
 
