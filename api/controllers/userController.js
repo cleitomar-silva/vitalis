@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../secretJWT.js";
+import { json } from "express";
 
 const userController = {
   register: (req, res) => {
@@ -15,7 +16,7 @@ const userController = {
       });
     }
 
-    const now = new Date().toISOString();   
+    const now = new Date().toISOString();
 
     const saltRounds = 10;
     const hashedPassword = bcryptjs.hashSync(password, saltRounds);
@@ -44,7 +45,7 @@ const userController = {
 
         // 3️⃣ Se passou pelas verificações, cria o usuário      
         User.create({ name, email, password: hashedPassword, level, login, company, now, idUserCreated }, (err, result) => {
-          if (err) return res.status(500).json({ error: err });          
+          if (err) return res.status(500).json({ error: err });
 
           res.status(201).json({
             message: "Usuário criado!",
@@ -78,6 +79,7 @@ const userController = {
 
   login: (req, res) => {
     const { email, password } = req.body;
+
 
     if (!email || !password) {
       return res
@@ -133,12 +135,127 @@ const userController = {
     });
   },
 
-  update: (req, res) => {
-    const { updatedByIdUser,id,name,login,password,level,status } = req.body;
+  updateUser: (req, res) => {
+    const { updatedByIdUser, id, name, login, password, level, status } = req.body;
+    const now = new Date().toISOString();
 
-    return res.json({ updatedByIdUser,id,name,login,password,level,status });
+    User.checkLoginById({ login, id }, (err, resultLogin) => {
+      if (err) return res.status(500).json({ error: err });
 
+      if (resultLogin.length > 0) {
+        return res.status(409).json({
+          type: "erro",
+          message: "Esse login já está em uso",
+        });
+      }
+
+      // 1️⃣ Buscar dados atuais do usuário
+      User.findByID(id, (err, results) => {
+        if (err) return res.status(500).json({ error: err });
+        if (results.length === 0) {
+          return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        const before = results[0]; // dados antes da alteração
+
+        // 2️⃣ Hash da senha, se fornecida
+        const hashedPassword = password && password.trim()
+          ? bcryptjs.hashSync(password, 10)
+          : before.password; // se não forneceu senha, mantém a antiga
+
+        const updatedData = {
+          id,
+          name,
+          login,
+          password: hashedPassword,
+          level,
+          status
+        };
+
+        // 3️⃣ Atualizar usuário
+        User.update(updatedData, (err, result) => {
+          if (err) return res.status(500).json({ error: err });
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              message: "Nenhum dado alterado",
+              type: "erro",
+            });
+          }
+
+          // 4️⃣ Criar log apenas com os campos que foram alterados
+          const after = {};
+          Object.keys(updatedData).forEach(key => {
+            const oldValue = before[key];
+            const newValue = updatedData[key];
+
+            // Converte ambos para string para comparar corretamente
+            if (String(oldValue) !== String(newValue)) {
+              after[key] = newValue;
+            }
+          });
+
+          if (Object.keys(after).length > 0) {
+            User.createLog({
+              action: 2, // update
+              before,
+              after,
+              table: "user",
+              created_at: now,
+              created_by_user_id: updatedByIdUser
+            }, (err) => {
+              if (err) console.error("Erro ao registrar log:", err);
+            });
+          }
+
+          res.status(200).json({
+            message: "Usuário atualizado com sucesso!",
+            id: id,
+          });
+        });
+      });
+    });
   },
+
+  deleteUser: (req, res) => {
+
+    // DELETE /users/delete/:id?deletedByIdUser=1
+
+    const { id } = req.params;             // ID do usuário a ser deletado
+    const { deletedByIdUser } = req.query; // Usuário que realizou a ação
+    const now = new Date().toISOString();
+
+    // 1️⃣ Buscar usuário antes de deletar
+    User.findByID(id, (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      if (results.length === 0) return res.status(404).json({ message: "Usuário não encontrado" });
+
+      const before = results[0];
+
+      // 2️⃣ Deletar usuário
+      User.delete(id, (err, result) => {
+        if (err) return res.status(500).json({ error: err });
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Nenhum usuário deletado" });
+
+        // 3️⃣ Registrar log
+        User.createLog({
+          action: 3,                // delete
+          before: before,
+          after: null,
+          table: 'user',
+          created_at: now,
+          created_by_user_id: deletedByIdUser
+        }, (err) => {
+          if (err) console.error("Erro ao registrar log:", err);
+        });
+
+        // 4️⃣ Resposta
+        res.status(200).json({ message: "Usuário deletado com sucesso!", id });
+      });
+    });
+  }
+
+
+
 
 };
 

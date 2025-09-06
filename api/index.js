@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 });
 app.use('/users', userRoutes);
 
+// TODO crud patient
 
 
 

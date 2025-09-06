@@ -8,9 +8,9 @@ router.post('/register',authMiddleware, userController.register);
 router.get('/',authMiddleware, userController.getAllUsers);
 router.get('/:id',authMiddleware, userController.getUserById);
 router.post('/login', userController.login);
-router.put('/update',authMiddleware, userController.update);
-// TODO update e delete users
-// crud patient
+router.put('/update',authMiddleware, userController.updateUser );
+router.delete('/delete/:id',authMiddleware, userController.deleteUser );
+
 
 
 
