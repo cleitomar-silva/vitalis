@@ -1,1 +1,1 @@
-# vitalis
+# Vitalis Medical
