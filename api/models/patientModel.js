@@ -20,16 +20,46 @@ const Patient = {
     );
   },
 
-  checkCPF: (cpf, callback) => {
-    db.query("SELECT id FROM patient WHERE cpf = ?", [cpf], callback);
+  checkCPF: (dados, callback) => {
+
+    const { cpfClean, empresaId } = dados;
+
+    const sql = `
+      SELECT p.id 
+      FROM patient p
+      INNER JOIN user u ON u.id = p.created_by_user_id 
+      WHERE p.cpf = ? AND u.company = ?
+    `;
+
+    db.query(sql, [cpfClean, empresaId], callback);
   },
 
-  findAll: (callback) => {
-    db.query('SELECT * FROM patient', callback);
+  findAll: (dados,callback) => {
+
+    const { empresaId } = dados;
+
+    const sql = `
+      SELECT p.* 
+      FROM patient p
+      INNER JOIN user u ON u.id = p.created_by_user_id 
+      WHERE u.company = ?
+    `;
+
+    db.query(sql, [empresaId], callback);
   },
 
-  findByID: (id, callback) => {
-    db.query('SELECT * FROM patient WHERE id = ?', [id], callback);
+  findByID: (dados, callback) => {
+
+    const { id, empresaId } = dados;
+
+    const sql = `
+      SELECT p.* 
+      FROM patient p
+      INNER JOIN user u ON u.id = p.created_by_user_id 
+      WHERE p.id = ? AND u.company = ?
+    `;
+
+    db.query(sql, [id, empresaId], callback);
   },
 
   delete: (id, callback) => {
