@@ -2,14 +2,16 @@ import User from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../secretJWT.js";
-import { json } from "express";
+// import { json } from "express";
 
 const userController = {
   register: (req, res) => {
-    const { idUserCreated, name, email, password, level, login, company } = req.body;
+
+    const { name, email, password, level, login } = req.body;
+    const { id: idUserCreated, empresaId } = req.user; // vem do token via middleware 
 
     // Verifica se todos os campos obrigatórios estão presentes
-    if (!login || !name || !password || !email || !level || !company) {
+    if (!login || !name || !password || !email || !level ) {
       return res.status(422).json({
         type: "erro",
         message: "Todos os campos são obrigatórios",
@@ -22,7 +24,7 @@ const userController = {
     const hashedPassword = bcryptjs.hashSync(password, saltRounds);
 
     // 1️⃣ Verificar duplicidade de login
-    User.findByLogin(login, (err, resultLogin) => {
+    User.findByLogin({login}, (err, resultLogin) => {
       if (err) return res.status(500).json({ error: err });
 
       if (resultLogin.length > 0) {
@@ -44,7 +46,7 @@ const userController = {
         }
 
         // 3️⃣ Se passou pelas verificações, cria o usuário      
-        User.create({ name, email, password: hashedPassword, level, login, company, now, idUserCreated }, (err, result) => {
+        User.create({ name, email, password: hashedPassword, level, login, company: empresaId, now, idUserCreated }, (err, result) => {
           if (err) return res.status(500).json({ error: err });
 
           res.status(201).json({
@@ -57,7 +59,10 @@ const userController = {
   },
 
   getAllUsers: (req, res) => {
-    User.findAll((err, results) => {
+
+    const { id, empresaId } = req.user; // vem do token via middleware   
+
+    User.findAll( empresaId, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       res.json(results);
     });
@@ -66,7 +71,9 @@ const userController = {
   getUserById: (req, res) => {
     const { id } = req.params;
 
-    User.findByID(id, (err, results) => {
+    const { empresaId } = req.user; // vem do token via middleware       
+
+    User.findByID({id, empresaId}, (err, results) => {
       if (err) return res.status(500).json({ error: err });
 
       if (results.length === 0) {
@@ -136,41 +143,46 @@ const userController = {
   },
 
   updateUser: (req, res) => {
-    const { updatedByIdUser, id, name, login, password, level, status } = req.body;
+   
+    const { id: userId,empresaId } = req.user; // vem do token via middleware  
+    const { id, name, login, password, level, status } = req.body;
     const now = new Date().toISOString();
+   
 
-    User.checkLoginById({ login, id }, (err, resultLogin) => {
-      if (err) return res.status(500).json({ error: err });
-
-      if (resultLogin.length > 0) {
-        return res.status(409).json({
-          type: "erro",
-          message: "Esse login já está em uso",
-        });
-      }
 
       // 1️⃣ Buscar dados atuais do usuário
-      User.findByID(id, (err, results) => {
+    User.findByID({id,empresaId}, (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      const before = results[0]; // dados antes da alteração
+
+      // 2️⃣ Hash da senha, se fornecida
+      const hashedPassword = password && password.trim()
+        ? bcryptjs.hashSync(password, 10)
+        : before.password; // se não forneceu senha, mantém a antiga
+
+      const updatedData = {
+        id,
+        name,
+        login,
+        password: hashedPassword,
+        level,
+        status
+      };
+
+      
+      User.checkLoginById({ login, id, empresaId }, (err, resultLogin) => {
         if (err) return res.status(500).json({ error: err });
-        if (results.length === 0) {
-          return res.status(404).json({ message: "Usuário não encontrado" });
+
+        if (resultLogin.length > 0) {
+          return res.status(409).json({
+            type: "erro",
+            message: "Esse login já está em uso",
+          });
         }
-
-        const before = results[0]; // dados antes da alteração
-
-        // 2️⃣ Hash da senha, se fornecida
-        const hashedPassword = password && password.trim()
-          ? bcryptjs.hashSync(password, 10)
-          : before.password; // se não forneceu senha, mantém a antiga
-
-        const updatedData = {
-          id,
-          name,
-          login,
-          password: hashedPassword,
-          level,
-          status
-        };
 
         // 3️⃣ Atualizar usuário
         User.update(updatedData, (err, result) => {
@@ -201,7 +213,7 @@ const userController = {
               after,
               table: "user",
               created_at: now,
-              created_by_user_id: updatedByIdUser
+              created_by_user_id: userId
             }, (err) => {
               if (err) console.error("Erro ao registrar log:", err);
             });
@@ -217,15 +229,14 @@ const userController = {
   },
 
   deleteUser: (req, res) => {
-
-    // DELETE /users/delete/:id?deletedByIdUser=1
-
+   
+    const { id: userId, empresaId } = req.user; // vem do token via middleware  
     const { id } = req.params;             // ID do usuário a ser deletado
-    const { deletedByIdUser } = req.query; // Usuário que realizou a ação
+    
     const now = new Date().toISOString();
-
+   
     // 1️⃣ Buscar usuário antes de deletar
-    User.findByID(id, (err, results) => {
+    User.findByID({id,empresaId}, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) return res.status(404).json({ message: "Usuário não encontrado" });
 
@@ -243,7 +254,7 @@ const userController = {
           after: null,
           table: 'user',
           created_at: now,
-          created_by_user_id: deletedByIdUser
+          created_by_user_id: userId
         }, (err) => {
           if (err) console.error("Erro ao registrar log:", err);
         });

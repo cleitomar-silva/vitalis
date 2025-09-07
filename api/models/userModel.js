@@ -19,25 +19,28 @@ const User = {
     //  console.log("DEBUG SQL:", query);
 
     db.query('SELECT * FROM user WHERE email = ?', [email], callback);
+  }, 
+  findByLogin: (dados, callback) => {
+    const { login } = dados;
+    db.query("SELECT * FROM user WHERE login = ? ", [login], callback);
   },
-  findByLogin: (login, callback) => {
-    db.query("SELECT * FROM user WHERE login = ?", [login], callback);
+  findAll: (empresaId, callback) => {
+
+    db.query('SELECT * FROM user WHERE company = ?',[empresaId], callback);
   },
-  findAll: (callback) => {
-    db.query('SELECT id,login, nome, email FROM user', callback);
-  },
-  findByID: (id, callback) => {
-    db.query('SELECT * FROM user WHERE id = ?', [id], callback);
+  findByID: (dados, callback) => {
+    const { id, empresaId } = dados;
+    db.query('SELECT * FROM user WHERE id = ? AND company = ?', [id, empresaId], callback);
   },
   checkLoginById: (dados, callback) => {
 
-    const { login, id } = dados;
+    const { login, id, empresaId } = dados;
 
     // const sql = 'SELECT id FROM user WHERE login = ? AND id != ?';
     // const query = db.format(sql, [login,id]);
     //  console.log("DEBUG SQL:", query);
 
-    db.query("SELECT id FROM user WHERE login = ? AND id != ?", [login, id], callback);
+    db.query("SELECT id FROM user WHERE login = ? AND id != ? AND company = ?", [login, id,empresaId], callback);
   },
   update: (dados, callback) => {
 
@@ -76,7 +79,7 @@ const User = {
       callback
     );
   },
-  
+
   delete: (id, callback) => {
     const sql = `DELETE FROM user WHERE id = ?`;
     db.query(sql, [id], callback);

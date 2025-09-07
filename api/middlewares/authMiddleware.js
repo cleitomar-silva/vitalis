@@ -19,7 +19,12 @@ export const authMiddleware = (req, res, next) => {
     }
 
     // 3️⃣ Token válido, adiciona info do usuário na requisição
-    req.userId = decoded.userId;
+   // req.userId = decoded.userId;
+    req.user = {
+      id: decoded.userId,
+      empresaId: decoded.empresaId
+    };
+
     next();
   });
 };
