@@ -9,6 +9,8 @@ meu-projeto/
 │  │   └─ userModel.js
 │  ├─ routes/
 │  │   └─ userRoutes.js
+|  ├─ utils/
+|  |   └─ utils.js 
 │  ├─ middlewares/
 │  │   └─ authMiddleware.js  # opcional, se quiser autenticação
 │  ├─ index.js           # ponto de entrada do servidor
