@@ -118,7 +118,7 @@ const patientController = {
         });
 
         // 4️⃣ Resposta
-        res.status(200).json({ message: "Usuário deletado com sucesso!", id });
+        res.status(200).json({ message: "Deletado com sucesso!", id });
       });
     });
   },

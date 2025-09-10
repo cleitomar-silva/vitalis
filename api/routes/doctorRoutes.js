@@ -7,7 +7,9 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 router.post('/register',authMiddleware, doctorController.register);
 router.get('/',authMiddleware, doctorController.getAllDoctor);
 router.get('/:id',authMiddleware, doctorController.getDoctorById);
-// TODO update e delete
+router.put('/update',authMiddleware, doctorController.updateDoctor );
+router.delete('/delete/:id',authMiddleware, doctorController.delete );
+
 
 
 export default  router;
