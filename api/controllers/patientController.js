@@ -135,7 +135,7 @@ const patientController = {
     let cepClean = cep.replace(/\D/g, '');
     let numberClean = number.replace(/\D/g, '');
 
-    if (!name || !cpfClean || !phone) {
+    if (!name || !cpfClean) {
       return res.status(422).json({
         type: "erro",
         message: "Os campos Nome e CPF são obrigatórios",
