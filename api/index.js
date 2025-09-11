@@ -3,6 +3,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import patientRoutes from "./routes/patientRoutes.js";
 import doctor from "./routes/doctorRoutes.js";
+import specialty from "./routes/specialtyRoutes.js";
 
 const app = express();
 const PORT = 8888;
@@ -17,8 +18,9 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes);
 app.use('/patient', patientRoutes);
 app.use('/doctor', doctor);
+app.use('/specialty', specialty);
 
-// TODO crud medico,especialidade, medicamento, procedimento, agenda, atendimento
+// TODO crud medicamento, procedimento, agenda, atendimento
 
 
 

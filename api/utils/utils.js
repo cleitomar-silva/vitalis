@@ -1,5 +1,3 @@
-
-
 export function inverterDataHora(str) {
   // remove vírgula e espaços extras
   str = str.replaceAll(',', '').trim();
@@ -14,4 +12,27 @@ export function formatDateToYMD(date) {
   if (!date) return null;
   const d = new Date(date);
   return d.toISOString().split("T")[0]; // pega só YYYY-MM-DD
+}
+
+export function normalizarDecimal(valor) {
+  if (typeof valor === "number") {
+    return valor.toFixed(2);
+  }
+
+  if (typeof valor === "string") {
+    let normalizado = valor;
+
+    if (valor.includes(",")) {
+      // formato brasileiro: "1.150,00"
+      normalizado = valor.replace(/\./g, "").replace(/,/g, ".");
+    }
+
+    if (isNaN(normalizado)) {
+      throw new Error(`Valor inválido: ${valor}`);
+    }
+
+    return parseFloat(normalizado).toFixed(2);
+  }
+
+  throw new Error("Tipo de valor não suportado");
 }
