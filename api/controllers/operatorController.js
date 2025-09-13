@@ -36,8 +36,8 @@ const operatorController = {
   register: (req, res) => {
 
     // const { name,registro_ans } = req.body; 
-    const name         = req.body.name.trim();  
-    const registro_ans = req.body.registro_ans.replace(/\D/g, '').trim();     
+    const name = req.body.name.trim();
+    const registro_ans = req.body.registro_ans.replace(/\D/g, '').trim();
 
     const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware     
 
@@ -46,11 +46,11 @@ const operatorController = {
         type: "erro",
         message: "Os campos Nome e Registro ANS são obrigatórios",
       });
-    }    
+    }
 
     // const now = new Date().toISOString();
     const now = new Date();
-    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));    
+    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     Operator.check({ name, registro_ans, empresaId }, (err, result) => {
       if (err) return res.status(500).json({ error: err });
@@ -60,7 +60,7 @@ const operatorController = {
           type: "erro",
           message: "Essa Operadora já está em uso",
         });
-      }      
+      }
 
       // create 
       Operator.create({
@@ -79,36 +79,37 @@ const operatorController = {
   },
 
   update: (req, res) => {
-    const {
-      id, name, query_value, status
-    } = req.body;
+    const id           = req.body.id.replace(/\D/g, '').trim();
+    const name         = req.body.name.trim();
+    const registro_ans = req.body.registro_ans.replace(/\D/g, '').trim();
+    const status       = req.body.status.replace(/\D/g, '').trim();
 
     const { id: updatedByIdUser, empresaId } = req.user; // vem do token via middleware 
 
-    if (!name) {
+    if (!name || !id || !status) {
       return res.status(422).json({
         type: "erro",
-        message: "O campo Nome é obrigatório",
+        message: "Os parametros id, nome e status são obrigatórios",
       });
     }
 
     const now = new Date();
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-    Specialty.findByID({id,empresaId}, (err, results) => {
+    Operator.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) {
-        return res.status(404).json({ message: "Especialidade não encontrada" });
-      }     
+        return res.status(404).json({ message: "Operadora não encontrada" });
+      }
 
       const before = results[0]; // dados antes da alteração      
-      
+
       const updatedData = {
-         id, name, query_value: normalizarDecimal(query_value), status
+        id, name, registro_ans, status
       };
 
       // 3️⃣ Atualizar 
-      Specialty.update(updatedData, (err, result) => {
+      Operator.update(updatedData, (err, result) => {
         if (err) return res.status(500).json({ error: err });
         if (result.affectedRows === 0) {
           return res.status(404).json({
@@ -130,11 +131,11 @@ const operatorController = {
         });
 
         if (Object.keys(after).length > 0) {
-          Specialty.createLog({
+          Operator.createLog({
             action: 2, // update
             before,
             after,
-            table: "specialty",
+            table: "operators",
             created_at: timeZoneNow,
             created_by_user_id: updatedByIdUser
           }, (err) => {
@@ -152,7 +153,7 @@ const operatorController = {
   },
 
   delete: (req, res) => {
-   
+
     const { id } = req.params;             // ID do paciente a ser deletado
     const { id: deletedByIdUser, empresaId } = req.user; // vem do token via middleware 
 
@@ -160,23 +161,23 @@ const operatorController = {
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     // 1️⃣ Buscar  antes de deletar
-    Specialty.findByID({id,empresaId}, (err, results) => {
+    Operator.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
-      if (results.length === 0) return res.status(404).json({ message: "Especialidade não encontrada" });
-     
+      if (results.length === 0) return res.status(404).json({ message: "Operadora não encontrada" });
+
       const before = results[0];
 
       // 2️⃣ Deletar 
-      Specialty.delete(id, (err, result) => {
+      Operator.delete(id, (err, result) => {
         if (err) return res.status(500).json({ error: err });
-        if (result.affectedRows === 0) return res.status(404).json({ message: "Nenhum Paciente deletado" });
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Nenhuma Operadora deletada" });
 
         // 3️⃣ Registrar log
-        Specialty.createLog({
+        Operator.createLog({
           action: 3,                // delete
           before: before,
           after: null,
-          table: 'specialty',
+          table: 'operators',
           created_at: timeZoneNow,
           created_by_user_id: deletedByIdUser
         }, (err) => {

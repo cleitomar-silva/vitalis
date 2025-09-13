@@ -61,13 +61,13 @@ const Operator = {
 
   update: (dados, callback) => {
 
-    const {  id, name, query_value, status } = dados;
+    const { id, name, registro_ans, status } = dados;
      
     let sql = `
-      UPDATE specialty SET name = ?, query_value = ?, status = ?
+      UPDATE operators SET name = ?, registro_ans = ?, status = ?
       WHERE id = ?
         `;
-    const params = [ name, query_value, status, id ];
+    const params = [ name, registro_ans, status, id ];
     
     // const query = db.format(sql, params);
     // console.log("DEBUG SQL:", query);
@@ -92,7 +92,7 @@ const Operator = {
   },
 
   delete: (id, callback) => {
-    const sql = `DELETE FROM specialty WHERE id = ?`;
+    const sql = `DELETE FROM operators WHERE id = ?`;
     db.query(sql, [id], callback);
   },
 
