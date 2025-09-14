@@ -26,7 +26,7 @@ app.use('/medication', medication);
 app.use('/operator', operator);
 
 
-// TODO crud  convenio( Nome operadora, Registro ans ), procedimento,exames, agenda, atendimento
+// TODO crud  procedimento,exames, agenda, atendimento
 
 
 

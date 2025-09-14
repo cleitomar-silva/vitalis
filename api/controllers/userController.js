@@ -3,6 +3,8 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../secretJWT.js";
 // import { json } from "express";
+import { inverterDataHora, formatDateToYMD, normalizarDecimal } from "../utils/utils.js";
+
 
 const userController = {
   register: (req, res) => {
@@ -11,20 +13,22 @@ const userController = {
     const { id: idUserCreated, empresaId } = req.user; // vem do token via middleware 
 
     // Verifica se todos os campos obrigatórios estão presentes
-    if (!login || !name || !password || !email || !level ) {
+    if (!login || !name || !password || !email || !level || !idUserCreated) {
       return res.status(422).json({
         type: "erro",
         message: "Todos os campos são obrigatórios",
       });
     }
 
-    const now = new Date().toISOString();
+    // const now = new Date().toISOString();
+    const now = new Date();
+    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     const saltRounds = 10;
     const hashedPassword = bcryptjs.hashSync(password, saltRounds);
 
     // 1️⃣ Verificar duplicidade de login
-    User.findByLogin({login}, (err, resultLogin) => {
+    User.findByLogin({ login }, (err, resultLogin) => {
       if (err) return res.status(500).json({ error: err });
 
       if (resultLogin.length > 0) {
@@ -45,9 +49,25 @@ const userController = {
           });
         }
 
+        const createData = {
+          name, email, password: hashedPassword, level, login, company: empresaId, timeZoneNow, idUserCreated
+        }
+
         // 3️⃣ Se passou pelas verificações, cria o usuário      
-        User.create({ name, email, password: hashedPassword, level, login, company: empresaId, now, idUserCreated }, (err, result) => {
+        User.create(createData, (err, result) => {
           if (err) return res.status(500).json({ error: err });
+
+          // 4️⃣ Registrar log
+          User.createLog({
+            action: 1,                // create
+            before: null,
+            after: createData,
+            table: 'user',
+            created_at: timeZoneNow,
+            created_by_user_id: idUserCreated
+          }, (err) => {
+            if (err) console.error("Erro ao registrar log:", err);
+          });
 
           res.status(201).json({
             message: "Usuário criado!",
@@ -62,7 +82,7 @@ const userController = {
 
     const { id, empresaId } = req.user; // vem do token via middleware   
 
-    User.findAll( empresaId, (err, results) => {
+    User.findAll(empresaId, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       res.json(results);
     });
@@ -73,7 +93,7 @@ const userController = {
 
     const { empresaId } = req.user; // vem do token via middleware       
 
-    User.findByID({id, empresaId}, (err, results) => {
+    User.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
 
       if (results.length === 0) {
@@ -86,6 +106,9 @@ const userController = {
 
   login: (req, res) => {
     const { email, password } = req.body;
+
+    const now = new Date();
+    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
 
     if (!email || !password) {
@@ -121,6 +144,11 @@ const userController = {
         // Gera o token JWT
         const token = jwt.sign({ userId: user.id, empresaId: user.company }, SECRET, { expiresIn: 28800 }); // 8 horas 
 
+        // 3️⃣ atualizar last login
+        User.updateLastLogin({ userId: user.id, lastLogin: timeZoneNow }, (err) => {
+          if (err) console.error("Erro ao atualizar presença:", err);
+        });
+
         return res.status(200).json({
           user: {
             nome: user.nome,
@@ -143,15 +171,16 @@ const userController = {
   },
 
   updateUser: (req, res) => {
-   
-    const { id: userId,empresaId } = req.user; // vem do token via middleware  
-    const { id, name, login, password, level, status } = req.body;
-    const now = new Date().toISOString();
-   
 
+    const { id: userId, empresaId } = req.user; // vem do token via middleware  
+    const { id, name, login, email, password, level, status } = req.body;
 
-      // 1️⃣ Buscar dados atuais do usuário
-    User.findByID({id,empresaId}, (err, results) => {
+    // const now = new Date().toISOString();
+    const now = new Date();
+    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
+
+    // 1️⃣ Buscar dados atuais do usuário
+    User.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) {
         return res.status(404).json({ message: "Usuário não encontrado" });
@@ -162,19 +191,20 @@ const userController = {
       // 2️⃣ Hash da senha, se fornecida
       const hashedPassword = password && password.trim()
         ? bcryptjs.hashSync(password, 10)
-        : before.password; // se não forneceu senha, mantém a antiga
+        : before.password; // se não forneceu senha, mantém a antiga    
 
       const updatedData = {
         id,
         name,
         login,
+        email,
         password: hashedPassword,
         level,
         status
       };
 
-      
-      User.checkLoginById({ login, id, empresaId }, (err, resultLogin) => {
+      // 3️⃣ ckeck login 
+      User.checkLoginById({ login, id }, (err, resultLogin) => {
         if (err) return res.status(500).json({ error: err });
 
         if (resultLogin.length > 0) {
@@ -183,60 +213,74 @@ const userController = {
             message: "Esse login já está em uso",
           });
         }
-
-        // 3️⃣ Atualizar usuário
-        User.update(updatedData, (err, result) => {
+        // 4️⃣ check login
+        User.findByEmailId({email,id}, (err, resultEmail) => {
           if (err) return res.status(500).json({ error: err });
-          if (result.affectedRows === 0) {
-            return res.status(404).json({
-              message: "Nenhum dado alterado",
+
+          if (resultEmail.length > 0) {
+            return res.status(409).json({
               type: "erro",
+              message: "Esse email já está em uso",
             });
           }
 
-          // 4️⃣ Criar log apenas com os campos que foram alterados
-          const after = {};
-          Object.keys(updatedData).forEach(key => {
-            const oldValue = before[key];
-            const newValue = updatedData[key];
-
-            // Converte ambos para string para comparar corretamente
-            if (String(oldValue) !== String(newValue)) {
-              after[key] = newValue;
+          // 5️⃣ Atualizar usuário
+          User.update(updatedData, (err, result) => {
+            if (err) return res.status(500).json({ error: err });
+            if (result.affectedRows === 0) {
+              return res.status(404).json({
+                message: "Nenhum dado alterado",
+                type: "erro",
+              });
             }
-          });
 
-          if (Object.keys(after).length > 0) {
-            User.createLog({
-              action: 2, // update
-              before,
-              after,
-              table: "user",
-              created_at: now,
-              created_by_user_id: userId
-            }, (err) => {
-              if (err) console.error("Erro ao registrar log:", err);
+            // 4️⃣ Criar log apenas com os campos que foram alterados
+            const after = {};
+            Object.keys(updatedData).forEach(key => {
+              const oldValue = before[key];
+              const newValue = updatedData[key];
+
+              // Converte ambos para string para comparar corretamente
+              if (String(oldValue) !== String(newValue)) {
+                after[key] = newValue;
+              }
             });
-          }
 
-          res.status(200).json({
-            message: "Usuário atualizado com sucesso!",
-            id: id,
+            if (Object.keys(after).length > 0) {
+              User.createLog({
+                action: 2, // update
+                before,
+                after,
+                table: "user",
+                created_at: timeZoneNow,
+                created_by_user_id: userId
+              }, (err) => {
+                if (err) console.error("Erro ao registrar log:", err);
+              });
+            }
+
+            res.status(200).json({
+              message: "Usuário atualizado com sucesso!",
+              id: id,
+            });
           });
         });
+
       });
     });
   },
 
   deleteUser: (req, res) => {
-   
+
     const { id: userId, empresaId } = req.user; // vem do token via middleware  
     const { id } = req.params;             // ID do usuário a ser deletado
-    
-    const now = new Date().toISOString();
-   
+
+    // const now = new Date().toISOString();
+    const now = new Date();
+    const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
+
     // 1️⃣ Buscar usuário antes de deletar
-    User.findByID({id,empresaId}, (err, results) => {
+    User.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) return res.status(404).json({ message: "Usuário não encontrado" });
 
@@ -253,7 +297,7 @@ const userController = {
           before: before,
           after: null,
           table: 'user',
-          created_at: now,
+          created_at: timeZoneNow,
           created_by_user_id: userId
         }, (err) => {
           if (err) console.error("Erro ao registrar log:", err);
@@ -264,10 +308,6 @@ const userController = {
       });
     });
   }
-
-
-
-
 };
 
 export default userController;
