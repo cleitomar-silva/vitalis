@@ -50,7 +50,7 @@ const userController = {
         }
 
         const createData = {
-          name, email, password: hashedPassword, level, login, company: empresaId, timeZoneNow, idUserCreated
+          name, email, password: hashedPassword, level, login, company: empresaId, created_at: timeZoneNow, created_by_user_id: idUserCreated
         }
 
         // 3️⃣ Se passou pelas verificações, cria o usuário      
@@ -110,6 +110,7 @@ const userController = {
     const now = new Date();
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
+    
 
     if (!email || !password) {
       return res

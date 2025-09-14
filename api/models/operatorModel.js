@@ -45,7 +45,7 @@ const Operator = {
   },
 
   create: (dados, callback) => {
-    const { timeZoneNow, createdByUserId, name, registro_ans } = dados;
+    const { created_at, created_by_user_id, name, registro_ans } = dados;
 
     const sql = `
       INSERT INTO operators (name, registro_ans, created_at, created_by_user_id) 
@@ -54,7 +54,7 @@ const Operator = {
 
     db.query(
       sql,
-      [ name, registro_ans, timeZoneNow, createdByUserId ],
+      [ name, registro_ans, created_at, created_by_user_id ],
       callback
     );
   },

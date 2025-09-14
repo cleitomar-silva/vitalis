@@ -31,7 +31,7 @@ const Medication = {
   },
   
   create: (dados, callback) => {
-    const { timeZoneNow, createdByUserId, name } = dados;
+    const { created_at, created_by_user_id, name } = dados;
 
     const sql = `
       INSERT INTO medication ( name, created_at, created_by_user_id ) 
@@ -40,7 +40,7 @@ const Medication = {
 
     db.query(
       sql,
-      [ name, timeZoneNow, createdByUserId],
+      [ name, created_at, created_by_user_id],
       callback
     );
   },

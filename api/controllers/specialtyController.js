@@ -34,7 +34,7 @@ const specialtyController = {
 
   register: (req, res) => {
     const {
-      name, query_value
+      name, queryValue
     } = req.body;     
 
     const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware 
@@ -58,13 +58,27 @@ const specialtyController = {
           type: "erro",
           message: "Essa especialidade já está em uso",
         });
-      }      
+      }     
+
+      const createData = {
+        created_at: timeZoneNow, created_by_user_id: createdByUserId, name, query_value: normalizarDecimal(queryValue)
+      };
 
       // create 
-      Specialty.create({
-        timeZoneNow, createdByUserId, name, query_value: normalizarDecimal(query_value)
-      }, (err, result) => {
+      Specialty.create(createData, (err, result) => {
         if (err) return res.status(500).json({ error: err });
+
+          // Registrar log
+          Specialty.createLog({
+            action: 1,                // create
+            before: null,
+            after: createData,
+            table: 'specialty',
+            created_at: timeZoneNow,
+            created_by_user_id: createdByUserId
+          }, (err) => {
+            if (err) console.error("Erro ao registrar log:", err);
+          });
 
         res.status(201).json({
           message: "Especialidade Gravada!",

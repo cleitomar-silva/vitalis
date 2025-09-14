@@ -13,9 +13,8 @@ const patientController = {
       name, cpf, email, phone, dateOfBirth, sex, cep, street, number, complement, neighborhood, city, state,
       healthPlan, cardNumber, observations, status
     } = req.body;
-    
-    const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware 
 
+    const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware 
 
     let cpfClean = cpf.replace(/\D/g, '');
     let cepClean = cep.replace(/\D/g, '');
@@ -34,7 +33,7 @@ const patientController = {
 
     // return res.json({msg:timeZoneNow  });
 
-    Patient.checkCPF({cpfClean,empresaId}, (err, resultCpf) => {
+    Patient.checkCPF({ cpfClean, empresaId }, (err, resultCpf) => {
       if (err) return res.status(500).json({ error: err });
 
       if (resultCpf.length > 0) {
@@ -43,12 +42,28 @@ const patientController = {
           message: "Esse CPF já está em uso",
         });
       }
+
+      const createData = {
+        created_at: timeZoneNow, name, cpf: cpfClean, email, phone, date_of_birth: dateOfBirth, sex, cep: cepClean, street, 
+        number: numberClean, complement, neighborhood, city, state, health_plan: healthPlan, card_number: cardNumber, 
+        observations, created_by_user_id: createdByUserId, status
+      };
+
       // create patient
-      Patient.create({
-        timeZoneNow, name, cpfClean, email, phone, dateOfBirth, sex, cepClean, street, numberClean, complement, neighborhood, city, state,
-        healthPlan, cardNumber, observations, createdByUserId, status
-      }, (err, result) => {
+      Patient.create(createData, (err, result) => {
         if (err) return res.status(500).json({ error: err });
+
+        // Registrar log
+        Patient.createLog({
+          action: 1,                // create
+          before: null,
+          after: createData,
+          table: 'patient',
+          created_at: timeZoneNow,
+          created_by_user_id: createdByUserId
+        }, (err) => {
+          if (err) console.error("Erro ao registrar log:", err);
+        });
 
         res.status(201).json({
           message: "Paciente criado!",
@@ -64,7 +79,7 @@ const patientController = {
 
     const { empresaId } = req.user; // vem do token via middleware   
 
-    Patient.findAll({empresaId},(err, results) => {
+    Patient.findAll({ empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       res.json(results);
     });
@@ -74,7 +89,7 @@ const patientController = {
     const { id } = req.params;
     const { empresaId } = req.user; // vem do token via middleware 
 
-    Patient.findByID({id,empresaId}, (err, results) => {
+    Patient.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
 
       if (results.length === 0) {
@@ -86,7 +101,7 @@ const patientController = {
   },
 
   deletePatient: (req, res) => {
-   
+
     const { id } = req.params;             // ID do paciente a ser deletado
     const { id: deletedByIdUser, empresaId } = req.user; // vem do token via middleware 
 
@@ -94,7 +109,7 @@ const patientController = {
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     // 1️⃣ Buscar  antes de deletar
-    Patient.findByID({id,empresaId}, (err, results) => {
+    Patient.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) return res.status(404).json({ message: "Paciente não encontrado" });
 
@@ -145,7 +160,7 @@ const patientController = {
     const now = new Date();
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-    Patient.findByID({id,empresaId}, (err, results) => {
+    Patient.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) {
         return res.status(404).json({ message: "Paciente não encontrado" });

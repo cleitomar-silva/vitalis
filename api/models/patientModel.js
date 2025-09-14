@@ -3,8 +3,8 @@ import db from '../config/db.js';
 const Patient = {
 
   create: (dados, callback) => {
-    const { timeZoneNow,name,cpfClean,email,phone,dateOfBirth,sex,cepClean,street,numberClean,complement,neighborhood,city,state,
-        healthPlan,cardNumber,observations,createdByUserId,status  } = dados;
+    const { created_at,name,cpf,email,phone,date_of_birth,sex,cep,street,number,complement,neighborhood,city,state,
+        health_plan,card_number,observations,created_by_user_id,status  } = dados;
 
     const sql = `
       INSERT INTO patient (name,cpf,email,phone,date_of_birth,sex,cep,street,number,complement,neighborhood,city,state,
@@ -14,8 +14,8 @@ const Patient = {
 
     db.query(
       sql,
-      [name, cpfClean,email,phone,dateOfBirth,sex,cepClean,street,numberClean,complement,neighborhood,city,state,healthPlan,cardNumber,
-        observations,timeZoneNow,createdByUserId,status],
+      [name, cpf,email,phone,date_of_birth,sex,cep,street,number,complement,neighborhood,city,state,health_plan,card_number,
+        observations,created_at,created_by_user_id,status],
       callback
     );
   },

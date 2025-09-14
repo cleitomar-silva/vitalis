@@ -37,11 +37,11 @@ const operatorController = {
 
     // const { name,registro_ans } = req.body; 
     const name = req.body.name.trim();
-    const registro_ans = req.body.registro_ans.replace(/\D/g, '').trim();
+    const registroAns = req.body.registroAns.replace(/\D/g, '').trim();
 
     const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware     
 
-    if (!name || !registro_ans) {
+    if (!name || !registroAns) {
       return res.status(422).json({
         type: "erro",
         message: "Os campos Nome e Registro ANS são obrigatórios",
@@ -52,7 +52,7 @@ const operatorController = {
     const now = new Date();
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-    Operator.check({ name, registro_ans, empresaId }, (err, result) => {
+    Operator.check({ name, registro_ans: registroAns, empresaId }, (err, result) => {
       if (err) return res.status(500).json({ error: err });
 
       if (result.length > 0) {
@@ -62,11 +62,23 @@ const operatorController = {
         });
       }
 
+      const createData = { created_at: timeZoneNow, created_by_user_id: createdByUserId, name, registro_ans: registroAns};
+
       // create 
-      Operator.create({
-        timeZoneNow, createdByUserId, name, registro_ans
-      }, (err, result) => {
+      Operator.create(createData, (err, result) => {
         if (err) return res.status(500).json({ error: err });
+
+         // Registrar log
+          Operator.createLog({
+            action: 1,                // create
+            before: null,
+            after: createData,
+            table: 'operators',
+            created_at: timeZoneNow,
+            created_by_user_id: createdByUserId
+          }, (err) => {
+            if (err) console.error("Erro ao registrar log:", err);
+          });
 
         res.status(201).json({
           message: "Operadora Gravada!",

@@ -45,7 +45,7 @@ const Specialty = {
   },
 
   create: (dados, callback) => {
-    const { timeZoneNow, createdByUserId, name, query_value } = dados;
+    const { created_at, created_by_user_id, name, query_value } = dados;
 
     const sql = `
       INSERT INTO specialty (name,query_value,created_at,created_by_user_id) 
@@ -54,7 +54,7 @@ const Specialty = {
 
     db.query(
       sql,
-      [ name, query_value, timeZoneNow, createdByUserId],
+      [ name, query_value, created_at, created_by_user_id],
       callback
     );
   },

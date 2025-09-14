@@ -5,12 +5,12 @@ import { SECRET } from "../secretJWT.js";
 import { inverterDataHora, formatDateToYMD } from "../utils/utils.js";
 
 const medicationController = {
-  
+
   getAll: (req, res) => {
-  
+
     const { empresaId } = req.user; // vem do token via middleware   
-  
-    Medication.findAll({empresaId},(err, results) => {
+
+    Medication.findAll({ empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       res.json(results);
     });
@@ -20,7 +20,7 @@ const medicationController = {
     const { id } = req.params;
     const { empresaId } = req.user; // vem do token via middleware 
 
-    Medication.findByID({id,empresaId}, (err, results) => {
+    Medication.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
 
       if (results.length === 0) {
@@ -33,10 +33,10 @@ const medicationController = {
 
   register: (req, res) => {
     const { name } = req.body;
-    
+
     const { id: createdByUserId, empresaId } = req.user; // vem do token via middleware 
 
-    if ( !name ) {
+    if (!name) {
       return res.status(422).json({
         type: "erro",
         message: "O campo Nome é obrigatório",
@@ -58,11 +58,24 @@ const medicationController = {
           message: "Esse Medicamento já está em uso",
         });
       }
+
+      const createData = {created_at: timeZoneNow, created_by_user_id: createdByUserId, name};
+
       // create
-      Medication.create({
-        timeZoneNow, createdByUserId, name
-      }, (err, result) => {
+      Medication.create(createData, (err, result) => {
         if (err) return res.status(500).json({ error: err });
+
+        // Registrar log
+        Medication.createLog({
+          action: 1,                // create
+          before: null,
+          after: createData,
+          table: 'medication',
+          created_at: timeZoneNow,
+          created_by_user_id: createdByUserId
+        }, (err) => {
+          if (err) console.error("Erro ao registrar log:", err);
+        });
 
         res.status(201).json({
           message: "Medicamento criado!",
@@ -72,7 +85,7 @@ const medicationController = {
     });
 
 
-  }, 
+  },
 
   update: (req, res) => {
     const {
@@ -91,16 +104,16 @@ const medicationController = {
     const now = new Date();
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-    Medication.findByID({id,empresaId}, (err, results) => {
+    Medication.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) {
         return res.status(404).json({ message: "Medicamento não encontrada" });
-      }     
+      }
 
       const before = results[0]; // dados antes da alteração      
-      
+
       const updatedData = {
-         id, name, status
+        id, name, status
       };
 
       // 3️⃣ Atualizar 
@@ -148,7 +161,7 @@ const medicationController = {
   },
 
   delete: (req, res) => {
-   
+
     const { id } = req.params;             // ID do paciente a ser deletado
     const { id: deletedByIdUser, empresaId } = req.user; // vem do token via middleware 
 
@@ -156,10 +169,10 @@ const medicationController = {
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     // 1️⃣ Buscar  antes de deletar
-    Medication.findByID({id,empresaId}, (err, results) => {
+    Medication.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
       if (results.length === 0) return res.status(404).json({ message: "Medicamento não encontrada" });
-     
+
       const before = results[0];
 
       // 2️⃣ Deletar 

@@ -2,11 +2,11 @@ import db from '../config/db.js';
 
 const User = {
   create: (user, callback) => {
-    const { name, email, password, level, login, company, timeZoneNow, idUserCreated } = user;
+    const { name, email, password, level, login, company, created_at, created_by_user_id } = user;
 
     db.query(
       'INSERT INTO user (name, email, password, level, login, company, created_at, created_by_user_id ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, email, password, level, login, company, timeZoneNow, idUserCreated],
+      [name, email, password, level, login, company, created_at, created_by_user_id],
       callback
     );
   },
