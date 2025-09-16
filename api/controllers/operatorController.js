@@ -93,7 +93,7 @@ const operatorController = {
   update: (req, res) => {
     const id           = req.body.id.replace(/\D/g, '').trim();
     const name         = req.body.name.trim();
-    const registro_ans = req.body.registro_ans.replace(/\D/g, '').trim();
+    const registroAns = req.body.registroAns.replace(/\D/g, '').trim();
     const status       = req.body.status.replace(/\D/g, '').trim();
 
     const { id: updatedByIdUser, empresaId } = req.user; // vem do token via middleware 
@@ -117,7 +117,7 @@ const operatorController = {
       const before = results[0]; // dados antes da alteração      
 
       const updatedData = {
-        id, name, registro_ans, status
+        id, name, registro_ans: registroAns, status
       };
 
       // 3️⃣ Atualizar 

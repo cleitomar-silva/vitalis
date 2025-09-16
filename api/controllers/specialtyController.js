@@ -92,7 +92,7 @@ const specialtyController = {
 
   update: (req, res) => {
     const {
-      id, name, query_value, status
+      id, name, queryValue, status
     } = req.body;
 
     const { id: updatedByIdUser, empresaId } = req.user; // vem do token via middleware 
@@ -116,7 +116,7 @@ const specialtyController = {
       const before = results[0]; // dados antes da alteração      
       
       const updatedData = {
-         id, name, query_value: normalizarDecimal(query_value), status
+         id, name, query_value: normalizarDecimal(queryValue), status
       };
 
       // 3️⃣ Atualizar 

@@ -6,7 +6,7 @@ import doctor from "./routes/doctorRoutes.js";
 import specialty from "./routes/specialtyRoutes.js";
 import medication from "./routes/medicationRoutes.js";
 import operator from "./routes/operatorRoutes.js";
-
+import procedure from "./routes/procedureRoutes.js";
 
 const app = express();
 const PORT = 8888;
@@ -24,9 +24,9 @@ app.use('/doctor', doctor);
 app.use('/specialty', specialty);
 app.use('/medication', medication);
 app.use('/operator', operator);
+app.use('/procedure', procedure);
 
-
-// TODO crud  procedimento,exames, agenda, atendimento
+// TODO crud  procedimento, exames, agenda, atendimento
 
 
 
