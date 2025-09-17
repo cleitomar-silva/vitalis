@@ -26,7 +26,7 @@ app.use('/medication', medication);
 app.use('/operator', operator);
 app.use('/procedure', procedure);
 
-// TODO crud  procedimento, exames, agenda, atendimento
+// TODO crud exames, agenda, atendimento
 
 
 

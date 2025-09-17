@@ -2,7 +2,6 @@ import db from '../config/db.js';
 
 const Procedure = {
 
-
   findAll: (dados, callback) => {
 
     const { empresaId } = dados;
@@ -31,45 +30,50 @@ const Procedure = {
     db.query(sql, [id, empresaId], callback);
   },
 
+  check: (dados, callback) => {
 
-
-
-
-
-  create: (dados, callback) => {
-    const { created_at, name, cpf, email, phone, date_of_birth, sex, cep, street, number, complement, neighborhood, city, state,
-      health_plan, card_number, observations, created_by_user_id, status } = dados;
+    const { name, empresaId } = dados;
 
     const sql = `
-      INSERT INTO patient (name,cpf,email,phone,date_of_birth,sex,cep,street,number,complement,neighborhood,city,state,
-        health_plan,card_number,observations,created_at,created_by_user_id,status ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      SELECT p.id 
+      FROM procedure_tbl p
+      INNER JOIN user u ON u.id = p.created_by_user_id 
+      WHERE p.name = ? AND u.company = ?
+    `;
+
+    db.query(sql, [name, empresaId], callback);
+  },
+
+  create: (dados, callback) => {
+    const { created_at, created_by_user_id, name } = dados;
+
+    const sql = `
+      INSERT INTO procedure_tbl (name, created_at, created_by_user_id) 
+      VALUES (?, ?, ?)
     `;
 
     db.query(
       sql,
-      [name, cpf, email, phone, date_of_birth, sex, cep, street, number, complement, neighborhood, city, state, health_plan, card_number,
-        observations, created_at, created_by_user_id, status],
+      [ name, created_at, created_by_user_id ],
       callback
     );
   },
 
-  checkCPF: (dados, callback) => {
+  update: (dados, callback) => {
 
-    const { cpfClean, empresaId } = dados;
-
-    const sql = `
-      SELECT p.id 
-      FROM patient p
-      INNER JOIN user u ON u.id = p.created_by_user_id 
-      WHERE p.cpf = ? AND u.company = ?
+    const { id, name, status } = dados;
+     
+    let sql = `
+      UPDATE procedure_tbl SET name = ?, status = ?
+      WHERE id = ?
     `;
+    const params = [ name, status, id ];
+    
+    // const query = db.format(sql, params);
+    // console.log("DEBUG SQL:", query);
 
-    db.query(sql, [cpfClean, empresaId], callback);
-  },
-  delete: (id, callback) => {
-    const sql = `DELETE FROM patient WHERE id = ?`;
-    db.query(sql, [id], callback);
+    db.query(sql, params, callback);
+
   },
 
   createLog: (logData, callback) => {
@@ -78,7 +82,7 @@ const Procedure = {
     const sql = `
       INSERT INTO logs (log_action, log_before, log_after, log_table_name, log_created_at, log_created_by_user_id)
       VALUES (?, ?, ?, ?, ?, ?)
-    `;
+    `;      
 
     db.query(
       sql,
@@ -87,28 +91,10 @@ const Procedure = {
     );
   },
 
-  update: (dados, callback) => {
-
-    const { name, cpf, email, phone, date_of_birth, sex, cep, street, number, complement, neighborhood, city, state,
-      health_plan, card_number, observations, status, id } = dados;
-
-    let sql = `
-      UPDATE patient SET name = ?,cpf = ?,email = ?,phone = ?,date_of_birth = ?,sex = ?,cep = ?,street = ?,number = ?,complement = ?,
-        neighborhood = ?,city = ?,state = ?, health_plan = ?,card_number = ?,observations = ?,status =?
-      WHERE id = ?
-        `;
-    const params = [name, cpf, email, phone, date_of_birth, sex, cep, street, number, complement, neighborhood, city, state,
-      health_plan, card_number, observations, status, id];
-
-    // const query = db.format(sql, params);
-    // console.log("DEBUG SQL:", query);
-
-    db.query(sql, params, callback);
-
+  delete: (id, callback) => {
+    const sql = `DELETE FROM procedure_tbl WHERE id = ?`;
+    db.query(sql, [id], callback);
   },
-
-
-
 };
 
 export default Procedure;
