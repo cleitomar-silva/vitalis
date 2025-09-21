@@ -107,7 +107,7 @@ const Exams = {
   },
 
   delete: (id, callback) => {
-    const sql = `DELETE FROM operators WHERE id = ?`;
+    const sql = `DELETE FROM exams WHERE id = ?`;
     db.query(sql, [id], callback);
   },
 

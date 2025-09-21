@@ -178,23 +178,23 @@ const examsController = {
     const timeZoneNow = inverterDataHora(now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     // 1️⃣ Buscar  antes de deletar
-    Operator.findByID({ id, empresaId }, (err, results) => {
+    Exams.findByID({ id, empresaId }, (err, results) => {
       if (err) return res.status(500).json({ error: err });
-      if (results.length === 0) return res.status(404).json({ message: "Operadora não encontrada" });
+      if (results.length === 0) return res.status(404).json({ message: "Registro não encontrado" });
 
       const before = results[0];
 
       // 2️⃣ Deletar 
-      Operator.delete(id, (err, result) => {
+      Exams.delete(id, (err, result) => {
         if (err) return res.status(500).json({ error: err });
-        if (result.affectedRows === 0) return res.status(404).json({ message: "Nenhuma Operadora deletada" });
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Nenhum registro deletado" });
 
         // 3️⃣ Registrar log
-        Operator.createLog({
+        Exams.createLog({
           action: 3,                // delete
           before: before,
           after: null,
-          table: 'operators',
+          table: 'exams',
           created_at: timeZoneNow,
           created_by_user_id: deletedByIdUser
         }, (err) => {
