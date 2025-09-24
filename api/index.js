@@ -8,6 +8,7 @@ import medication from "./routes/medicationRoutes.js";
 import operator from "./routes/operatorRoutes.js";
 import procedure from "./routes/procedureRoutes.js";
 import exams from "./routes/examsRoutes.js";
+import hour from "./routes/hourRoutes.js";
 
 const app = express();
 const PORT = 8888;
@@ -27,8 +28,9 @@ app.use('/medication', medication);
 app.use('/operator', operator);
 app.use('/procedure', procedure);
 app.use('/exams', exams);
+app.use('/hour', hour);
 
-// TODO crud exames, agenda, atendimento
+// TODO crud horario, agenda, atendimento
 
 
 
