@@ -58,6 +58,21 @@ const hour = {
     db.query(sql, [idDoctor, empresaId], callback);
   },
 
+  checkRegistrationAndFind: (dados, callback) => {
+
+    const { id, idDoctor, empresaId } = dados;
+
+    const sql = `
+      SELECT h.* 
+      FROM hour h
+      INNER JOIN doctor d ON d.id = h.id_doctor
+      INNER JOIN user u ON u.id = d.created_by_user_id 
+      WHERE h.id = ? AND d.id = ? AND u.company = ?
+    `;
+
+    db.query(sql, [id, idDoctor, empresaId], callback);
+  },
+
   create: (dados, callback) => {
     const {created_at, created_by_user_id, id_doctor, first_entry, first_exit, second_entry, second_exit } = dados;
 
@@ -76,13 +91,13 @@ const hour = {
 
   update: (dados, callback) => {
 
-    const { id, name, registro_ans, status } = dados;
+    const {  id, id_doctor, first_entry, first_exit, second_entry, second_exit, status } = dados;
      
     let sql = `
-      UPDATE operators SET name = ?, registro_ans = ?, status = ?
+      UPDATE hour SET id_doctor = ?, first_entry = ?, first_exit = ?,second_entry = ?, second_exit = ?, status = ?
       WHERE id = ?
-        `;
-    const params = [ name, registro_ans, status, id ];
+    `;
+    const params = [ id_doctor, first_entry, first_exit, second_entry, second_exit, status, id ];
     
     // const query = db.format(sql, params);
     // console.log("DEBUG SQL:", query);
@@ -107,7 +122,7 @@ const hour = {
   },
 
   delete: (id, callback) => {
-    const sql = `DELETE FROM operators WHERE id = ?`;
+    const sql = `DELETE FROM hour WHERE id = ?`;
     db.query(sql, [id], callback);
   },
 
