@@ -30,7 +30,7 @@ app.use('/procedure', procedure);
 app.use('/exams', exams);
 app.use('/hour', hour);
 
-// TODO crud horario, agenda, atendimento
+// TODO crud agenda, atendimento
 
 
 
