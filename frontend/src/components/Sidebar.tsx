@@ -1,15 +1,26 @@
 import React, { useState } from "react";
- import { Link } from "react-router-dom";
-import { Activity, LayoutDashboard, Users, Calendar, CreditCard, FlaskConical, UserCheck, BarChart3, ListFilter, ListRestart, Circle, RotateCcw, StickyNote, Columns2,LogOut  } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Activity, LayoutDashboard, Users, Calendar, CreditCard, FlaskConical, UserCheck, BarChart3, ListFilter, ListRestart, Circle, RotateCcw, StickyNote, Columns2, LogOut,X } from "lucide-react";
 
+type SidebarProps = {
+    isOpen: boolean;
+    onClose: () => void;
+};
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const [open, setOpen] = useState(false);
 
     return (
         <>
-            <div id="sidebar" className="w-72 bg-white dark:bg-gray-800 shadow-premium border-r border-gray-200 dark:border-gray-700">
+            {/* Sidebar Overlay (for mobile) */}
+            <div id="sidebar-overlay"
+                className={`${isOpen ? "" : "active" }` }
+                onClick={onClose}
+            ></div>
+
+            <div id="sidebar" className={`w-72 bg-white dark:bg-gray-800 shadow-premium border-r border-gray-200 dark:border-gray-700  ${isOpen ? "" : "active"}  `}>
+
                 <div className="flex flex-col h-full">
                     {/* Logo and Close Button Section */}
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
@@ -24,8 +35,11 @@ function Sidebar() {
                                 </div>
                             </a>
                         </div>
-                        <button id="sidebar-close" className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i data-lucide="x" className="w-5 h-5 dark:text-gray-300"></i>
+                         <button
+                            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                            onClick={onClose}
+                        >
+                            <X className="w-5 h-5 dark:text-gray-300" />
                         </button>
                     </div>
 
@@ -33,10 +47,10 @@ function Sidebar() {
                     <nav className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
                         <ul className="space-y-2">
                             <li>
-                                <a href="index.html" className="active flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 font-medium shadow-sm transition-all">
+                                <Link to="painel" className="active flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 font-medium shadow-sm transition-all">
                                     <LayoutDashboard className="w-5 h-5" />
                                     <span>Dashboard</span>
-                                </a>
+                                </Link>
                             </li>
                             <li>
                                 <a href="patients.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
@@ -141,7 +155,7 @@ function Sidebar() {
                                 <p className="text-sm font-display font-semibold text-gray-900 dark:text-white">Dr. Wilson</p>
                                 <p className="text-xs font-body text-gray-500 dark:text-gray-400">Chief Medical Officer</p>
                             </div>
-                            <Link to="#"><LogOut className="w-4 h-4 text-gray-400" /></Link>
+                            <Link to="/sair"><LogOut className="w-4 h-4 text-gray-400" /></Link>
                         </div>
                     </div>
                 </div>

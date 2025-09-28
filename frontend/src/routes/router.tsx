@@ -5,6 +5,7 @@ import Users from "../pages/Users";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Sair from "../pages/Exit";
+import Dashboard from "../pages/Dashboard";
 
 
 import PrivateRoute from "./PrivateRoute";
@@ -37,6 +38,14 @@ const router = createBrowserRouter(
             element: (
             <PrivateRoute>
                 <Users />
+            </PrivateRoute>
+            ),
+        },
+        {
+            path: "/painel",
+            element: (
+            <PrivateRoute>
+                <Dashboard />
             </PrivateRoute>
             ),
         },
