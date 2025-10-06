@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    /* Linguagem de saída */
+    "target": "ES2021",                          
+    "module": "CommonJS",                        
+    "moduleResolution": "node",    
+    "lib": ["ES2021"],               
+
+    /* Diretórios de entrada/saída */
+    "rootDir": "./src",                          
+    "outDir": "./dist",                          
+
+    /* Regras de compatibilidade */
+    "esModuleInterop": true,                     
+    "resolveJsonModule": true,                   
+    "allowSyntheticDefaultImports": true,        
+
+    /* Boas práticas */
+    "strict": true,                              
+    "forceConsistentCasingInFileNames": true,    
+    "skipLibCheck": true                         
+  },
+  "include": ["src"],                            
+  "exclude": ["node_modules", "dist"]            
+}
