@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Activity, LayoutDashboard, Users, Calendar, CreditCard, FlaskConical, UserCheck, BarChart3, ListFilter, ListRestart, Circle, RotateCcw, StickyNote, Columns2, LogOut,X } from "lucide-react";
+import { 
+    Activity, LayoutDashboard, Users, Calendar,   CreditCard, FlaskConical, UserCheck, BarChart3, ListFilter, ListRestart, Circle, 
+    RotateCcw, StickyNote, Columns2, LogOut, X, Pill, Stethoscope, ClipboardList, Layers,Clipboard, Microscope             
+ } from "lucide-react";
 
 type SidebarProps = {
     isOpen: boolean;
@@ -26,14 +29,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
                         <div>
                             <a href="index.html" className="flex items-center space-x-3">
-                                 <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width={60}
-                                    height={50}
-                                    viewBox="0 0 80 80"
-                                    role="img"
-                                    aria-label="Vitalis logo"
-                                    >
+                                 <svg  xmlns="http://www.w3.org/2000/svg" width={60} height={50} viewBox="0 0 80 80" role="img"  aria-label="Vitalis logo">
                                     <title>Vitalis</title>
                                     <g transform="translate(8,8)">
                                         <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
@@ -72,23 +68,25 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 </Link>
                             </li>
                             <li>
-                                <a href="patients.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <Users className="w-5 h-5" />
-                                    <span>Patients</span>
+                                <a href="billing.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
+                                    <ClipboardList   className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                    <span>Atendimento</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="appointments.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
                                     <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                    <span>Appointments</span>
+                                    <span>Agendamento</span>
                                 </a>
                             </li>
+
+                            {/*
                             <li>
-                                <a href="billing.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                    <span>Billing</span>
+                                <a href="patients.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
+                                    <Users className="w-5 h-5" />
+                                    <span>Patients</span>
                                 </a>
-                            </li>
+                            </li>  
                             <li>
                                 <a href="lab-results.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
                                     <FlaskConical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -101,40 +99,68 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     <span>Staff</span>
                                 </a>
                             </li>
+                            */}
+
                             <li>
                                 <a href="reports.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
                                     <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                                     <span>Reports</span>
                                 </a>
                             </li>
+
                             <li>
                                 <button
                                     className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200"
                                     onClick={() => setOpen(!open)}
-                                >
+                                    >
                                     <div className="flex items-center space-x-3">
                                         <ListFilter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                        <span>Pages</span>
+                                        <span>Cadastros</span>
                                     </div>
                                     {/* Chevron rotaciona quando aberto */}
-                                    <svg
-                                        className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
+                                    <svg  className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
-                                <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>
+                                <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>                                  
                                     <li>
-                                        <a href="/login" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <ListRestart className="w-5 h-5" />
-                                            <span>Login</span>
+                                        <a href="/staff.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <UserCheck className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                            <span>Usuários</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <Users className="w-5 h-5" />
+                                            <span>Pacientes</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <Stethoscope   className="w-5 h-5" />
+                                            <span>Médicos</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <Pill   className="w-5 h-5" />
+                                            <span>Medicamentos</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <Layers     className="w-5 h-5" />
+                                            <span>Especialidades</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                            <Microscope      className="w-5 h-5" />
+                                            <span>Exames</span>
+                                        </a>
+                                    </li>
+                                    {/*
                                     <li>
                                         <a href="/signup" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
                                             <Circle className="w-5 h-5" />
@@ -159,6 +185,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                             <span>500 page</span>
                                         </a>
                                     </li>
+                                    */}
                                 </ul>
                             </li>
                         </ul>
