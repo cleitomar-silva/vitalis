@@ -1,0 +1,13 @@
+
+
+:root {
+  --cor-padrao-500: #8b47ff;
+}
+
+.text-padrao-500 {
+  color: var(--cor-padrao-500);
+}
+
+.bg-padrao-500 {
+  background-color: var(--cor-padrao-500);
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Users, CalendarCheck, TrendingUp, FlaskConical, UserPlus, CalendarPlus, FilePlus, AlertTriangle, Clock, Check, AlertCircle, X, Plus, Trash2  } from "lucide-react";
+import { Users, CalendarCheck, TrendingUp, FlaskConical, UserPlus, CalendarPlus, FilePlus, AlertTriangle, Clock, Check, AlertCircle, X } from "lucide-react";
 import InvoiceItems from "../components/InvoiceItems";
 
 

@@ -26,12 +26,31 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
                         <div>
                             <a href="index.html" className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center">
-                                    <Activity className="w-6 h-6 text-white" />
-                                </div>
+                                 <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width={60}
+                                    height={50}
+                                    viewBox="0 0 80 80"
+                                    role="img"
+                                    aria-label="Vitalis logo"
+                                    >
+                                    <title>Vitalis</title>
+                                    <g transform="translate(8,8)">
+                                        <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
+                                        <path
+                                        d="M12 36 L20 24 L28 40 L36 30 L44 36"
+                                        fill="none"
+                                        stroke="#fff"
+                                        strokeWidth="4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        transform="translate(6,8)"
+                                        />
+                                    </g>
+                                    </svg>
                                 <div>
-                                    <h1 className="text-xl font-display font-bold text-gray-900 dark:text-white">CuraPanel</h1>
-                                    <p className="text-sm font-body text-gray-500 dark:text-gray-400">Healthcare Admin</p>
+                                    <h1 className="text-xl font-display font-bold text-gray-900 dark:text-white">Vitalis</h1>
+                                    <p className="text-sm font-body text-gray-500 dark:text-gray-400">Administração de Saúde</p>
                                 </div>
                             </a>
                         </div>

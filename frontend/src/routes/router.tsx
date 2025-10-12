@@ -3,8 +3,8 @@ import App from "../App";
 import ErrorPage from "../pages/ErrorPage";
 import Users from "../pages/Users";
 import Login from "../pages/Login";
-import Home from "../pages/Home";
-import Sair from "../pages/Exit";
+// import Home from "../pages/Home";
+import Exit from "../pages/Exit";
 import Dashboard from "../pages/Dashboard";
 
 
@@ -21,7 +21,7 @@ const router = createBrowserRouter(
           path: "/",
           element: (
             <PrivateRoute>
-              <Home />
+              <Dashboard />
             </PrivateRoute>
           ),
         },
@@ -31,7 +31,7 @@ const router = createBrowserRouter(
         }, 
         {
           path: "/sair",
-          element: <Sair />,
+          element: <Exit />,
         }, 
         {
             path: "/usuarios",
