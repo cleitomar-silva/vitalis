@@ -105,7 +105,7 @@ const userController = {
       }
 
       const user = await UserModel.findByEmail(email);
-      if (!user) return res.status(404).json({ message: "Nome ou senha inválida.", type: "outros" });
+      if (!user) return res.status(404).json({ message: "E-mail ou senha inválida.", type: "outros" });
 
       // Caso precise redefinir senha
       if (user.password === null && user.status === 1) {
@@ -113,7 +113,7 @@ const userController = {
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) return res.status(401).json({ message: "Nome ou senha inválida", type: "outros" });
+      if (!passwordMatch) return res.status(401).json({ message: "E-mail ou senha inválida", type: "outros" });
       if (user.status === 0) return res.status(400).json({ message: "Bloqueado", type: "outros" });
 
       const token = jwt.sign({ userId: user.id, empresaId: user.company }, SECRET, { expiresIn: 28800 });
