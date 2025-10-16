@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { 
-    Activity, LayoutDashboard, Users, Calendar,   CreditCard, FlaskConical, UserCheck, BarChart3, ListFilter, ListRestart, Circle, 
-    RotateCcw, StickyNote, Columns2, LogOut, X, Pill, Stethoscope, ClipboardList, Layers,Clipboard, Microscope             
+    // Activity, CreditCard, FlaskConical, ListRestart, Circle, Clipboard, RotateCcw, StickyNote, Columns2, 
+    LayoutDashboard, Users, Calendar, 
+    UserCheck, BarChart3, ListFilter,  
+    LogOut, X, Pill, Stethoscope, ClipboardList, Layers, Microscope             
  } from "lucide-react";
 
 type SidebarProps = {
@@ -64,7 +66,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                             <li>
                                 <Link to="painel" className="active flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 font-medium shadow-sm transition-all">
                                     <LayoutDashboard className="w-5 h-5" />
-                                    <span>Dashboard</span>
+                                    <span>Painel</span>
                                 </Link>
                             </li>
                             <li>
@@ -104,7 +106,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                             <li>
                                 <a href="reports.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
                                     <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                    <span>Reports</span>
+                                    <span>Relatório</span>
                                 </a>
                             </li>
 
@@ -125,10 +127,10 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                                 <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>                                  
                                     <li>
-                                        <a href="/staff.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                        <Link to="/usuarios" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
                                             <UserCheck className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                                             <span>Usuários</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
                                         <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">

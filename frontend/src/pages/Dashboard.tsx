@@ -17,8 +17,8 @@ function Dashboard() {
 
     // Define o título e subtítulo quando a página é carregada
     useEffect(() => {
-        setHeaderTitle("Dashboard");
-        setHeaderSubtitle("Welcome back, Dr. Wilson.");
+        setHeaderTitle("Painel");
+        setHeaderSubtitle("Bem vindo, Dr. Wilson.");
     }, [setHeaderTitle, setHeaderSubtitle]);
 
     return (

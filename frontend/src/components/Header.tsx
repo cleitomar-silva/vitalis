@@ -58,7 +58,7 @@ function Header({ onToggleSidebar, title, subtitle }: HeaderProps) {
                     </div>
                     <div className="flex items-center space-x-2 sm:space-x-3 header-actions flex-shrink-0">
                         <div className="relative search-container hidden sm:block">
-                            <input type="text" placeholder="Search ..." className="w-40 md:w-48 lg:w-60 px-4 py-2 pl-10 pr-4 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                            <input type="text" placeholder="Procurar ..." className="w-40 md:w-48 lg:w-60 px-4 py-2 pl-10 pr-4 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                         </div>
                         <button id="mobile-search-btn" className="sm:hidden p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
