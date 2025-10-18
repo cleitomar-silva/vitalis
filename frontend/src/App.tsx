@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./assets/index.css"
+import "./assets/style.css";
+import "./assets/output.css";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import ThemeToggle from "./components/ThemeToggle";

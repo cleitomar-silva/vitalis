@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { 
+import { Link, useLocation } from "react-router-dom";
+import {
     // Activity, CreditCard, FlaskConical, ListRestart, Circle, Clipboard, RotateCcw, StickyNote, Columns2, 
-    LayoutDashboard, Users, Calendar, 
-    UserCheck, BarChart3, ListFilter,  
-    LogOut, X, Pill, Stethoscope, ClipboardList, Layers, Microscope             
- } from "lucide-react";
+    LayoutDashboard, Users, Calendar,
+    UserCheck, BarChart3, ListFilter,
+    LogOut, X, Pill, Stethoscope, ClipboardList, Layers, Microscope
+} from "lucide-react";
 
 type SidebarProps = {
     isOpen: boolean;
@@ -15,12 +15,15 @@ type SidebarProps = {
 function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const [open, setOpen] = useState(false);
+    const location = useLocation(); // hook para pegar a rota atual
+
+    const isActive = (path: string) => location.pathname === path;
 
     return (
         <>
             {/* Sidebar Overlay (for mobile) */}
             <div id="sidebar-overlay"
-                className={`${isOpen ? "" : "active" }` }
+                className={`${isOpen ? "" : "active"}`}
                 onClick={onClose}
             ></div>
 
@@ -30,29 +33,26 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     {/* Logo and Close Button Section */}
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
                         <div>
-                            <a href="index.html" className="flex items-center space-x-3">
-                                 <svg  xmlns="http://www.w3.org/2000/svg" width={60} height={50} viewBox="0 0 80 80" role="img"  aria-label="Vitalis logo">
-                                    <title>Vitalis</title>
+                            <Link to="/" className="flex items-center space-x-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Risoleta brand">
+                                    <title>Risoleta</title>
                                     <g transform="translate(8,8)">
                                         <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
-                                        <path
-                                        d="M12 36 L20 24 L28 40 L36 30 L44 36"
-                                        fill="none"
-                                        stroke="#fff"
-                                        strokeWidth="4"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        transform="translate(6,8)"
-                                        />
+                                        <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)" />
+                                        <path d="M12 46 Q32 62 52 46" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,2)" />
                                     </g>
-                                    </svg>
-                                <div>
-                                    <h1 className="text-xl font-display font-bold text-gray-900 dark:text-white">Vitalis</h1>
-                                    <p className="text-sm font-body text-gray-500 dark:text-gray-400">Administração de Saúde</p>
-                                </div>
-                            </a>
+                                    <g transform="translate(86,44)">
+                                        <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="currentColor" className="text-neutral-800 dark:text-neutral-50 ">
+                                            Risoleta
+                                        </text>
+                                        <text  x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="currentColor" className="text-neutral-800 dark:text-neutral-50" >
+                                            Tecnologia que cuida
+                                        </text>
+                                    </g>
+                                </svg>
+                            </Link>
                         </div>
-                         <button
+                        <button
                             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                             onClick={onClose}
                         >
@@ -64,135 +64,154 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <nav className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
                         <ul className="space-y-2">
                             <li>
-                                <Link to="painel" className="active flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 font-medium shadow-sm transition-all">
+                                <Link
+                                    to="/painel"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
+                                        ${isActive("/painel")
+                                            ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 shadow-sm"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                        }`}
+                                >
                                     <LayoutDashboard className="w-5 h-5" />
                                     <span>Painel</span>
                                 </Link>
                             </li>
                             <li>
-                                <a href="billing.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <ClipboardList   className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <Link
+                                    to="/atendimento"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
+                                        ${isActive("/atendimento")
+                                            ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 shadow-sm"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                        }`}
+                                >
+                                    <ClipboardList className="w-5 h-5" />
                                     <span>Atendimento</span>
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="appointments.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <Link
+                                    to="/agendamento"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
+                                        ${isActive("/agendamento")
+                                            ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 shadow-sm"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                        }`}
+                                >
+                                    <Calendar className="w-5 h-5" />
                                     <span>Agendamento</span>
-                                </a>
-                            </li>
-
-                            {/*
-                            <li>
-                                <a href="patients.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <Users className="w-5 h-5" />
-                                    <span>Patients</span>
-                                </a>
-                            </li>  
-                            <li>
-                                <a href="lab-results.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <FlaskConical className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                    <span>Lab Results</span>
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="staff.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <UserCheck className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                    <span>Staff</span>
-                                </a>
-                            </li>
-                            */}
-
-                            <li>
-                                <a href="reports.html" className="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200">
-                                    <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <Link
+                                    to="/relatorio"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
+                                        ${isActive("/relatorio")
+                                            ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-purple-700 dark:text-primary-300 shadow-sm"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                        }`}
+                                >
+                                    <BarChart3 className="w-5 h-5" />
                                     <span>Relatório</span>
-                                </a>
+                                </Link>
                             </li>
-
                             <li>
                                 <button
                                     className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200"
-                                    onClick={() => setOpen(!open)}
-                                    >
+                                    onClick={() => setOpen(!open)}>
                                     <div className="flex items-center space-x-3">
                                         <ListFilter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                                         <span>Cadastros</span>
                                     </div>
                                     {/* Chevron rotaciona quando aberto */}
-                                    <svg  className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
-                                <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>                                  
+                                <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>
                                     <li>
-                                        <Link to="/usuarios" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <UserCheck className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                        <Link
+                                            to="/usuarios"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/usuarios")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
+                                            <UserCheck className="w-5 h-5" />
                                             <span>Usuários</span>
                                         </Link>
                                     </li>
                                     <li>
-                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
+                                        <Link
+                                            to="/pacientes"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/pacientes")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
                                             <Users className="w-5 h-5" />
                                             <span>Pacientes</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Stethoscope   className="w-5 h-5" />
+                                        <Link
+                                            to="/medicos"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/medicos")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
+                                            <Stethoscope className="w-5 h-5" />
                                             <span>Médicos</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Pill   className="w-5 h-5" />
+                                        <Link
+                                            to="/medicamentos"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/medicamentos")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
+                                            <Pill className="w-5 h-5" />
                                             <span>Medicamentos</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Layers     className="w-5 h-5" />
+                                        <Link
+                                            to="/especialidades"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/especialidades")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
+                                            <Layers className="w-5 h-5" />
                                             <span>Especialidades</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a href="/patients.html" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Microscope      className="w-5 h-5" />
+                                        <Link
+                                            to="/exames"
+                                            className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
+                                                ${isActive("/exames")
+                                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                                                }`}
+                                        >
+                                            <Microscope className="w-5 h-5" />
                                             <span>Exames</span>
-                                        </a>
+                                        </Link>
                                     </li>
-                                    {/*
-                                    <li>
-                                        <a href="/signup" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Circle className="w-5 h-5" />
-                                            <span>Signup</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/forgot-password" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <RotateCcw className="w-5 h-5" />
-                                            <span>Forgot password</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/404" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <StickyNote className="w-5 h-5" />
-                                            <span>404 page</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/500" className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center space-x-3">
-                                            <Columns2 className="w-5 h-5" />
-                                            <span>500 page</span>
-                                        </a>
-                                    </li>
-                                    */}
                                 </ul>
                             </li>
                         </ul>
                     </nav>
-
                     {/* User Profile */}
                     <div className="border-t border-gray-200 dark:border-gray-700 h-20 flex items-center p-4">
                         <div className="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700 w-full">

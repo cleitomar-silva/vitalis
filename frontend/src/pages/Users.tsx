@@ -1,11 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Users as UsersIcon, UserCheck, CalendarX, Moon, UserCog, MessageSquare, Stethoscope } from "lucide-react";
+import {
+  // UserCheck, CalendarX, Moon,
+  // Users as UsersIcon,  UserCog, MessageSquare, Stethoscope 
+} from "lucide-react";
 
 
 
 
 function Users() {
+
+
+  // 🔹 Estado para o filtro selecionado
+  const [activeFilter, setActiveFilter] = useState<"todos" | "ativos" | "inativo">("todos");
+
+  // 🔹 Função auxiliar para definir classes de botão
+  const getButtonClasses = (type: "todos" | "ativos" | "inativo") => {
+    const base =
+      "px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer";
+    const active =
+      "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300";
+    const inactive =
+      "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800";
+
+    return `${base} ${activeFilter === type ? active : inactive}`;
+  };
+
 
   const { setHeaderTitle, setHeaderSubtitle } = useOutletContext<{
     setHeaderTitle: (title: string) => void;
@@ -18,72 +38,22 @@ function Users() {
     setHeaderSubtitle("Gerenciar acessos ao sistema");
   }, [setHeaderTitle, setHeaderSubtitle]);
 
+
+
+
+
   return (
     <>
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
-        {/* Staff Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover-lift">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total de usuários</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-white mt-1">47</p>
-                <p className="text-blue-600 dark:text-blue-400 text-sm mt-2">↗ +3 novos registros</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <UsersIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover-lift">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Médicos</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-white mt-1">32</p>
-                <p className="text-green-600 dark:text-green-400 text-sm mt-2">↗ 15 ativos, 17 inativos</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                <Stethoscope className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover-lift">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Recepcionista</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-white mt-1">8</p>
-                <p className="text-orange-600 dark:text-orange-400 text-sm mt-2">↗ 3 ativos, 5 inativos</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover-lift">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Administrador</p>
-                <p className="text-3xl font-bold text-gray-800 dark:text-white mt-1">12</p>
-                <p className="text-purple-600 dark:text-purple-400 text-sm mt-2">↗ 4 ativos, 8 inativos</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                <UserCog className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Department Tabs */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-              <button className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-medium">Todos</button>
-              <button className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors">Médicos</button>
-              <button className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors">Recepcionista</button>          
-              <button className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors">Administrador</button>
+              <button onClick={() => setActiveFilter("todos")} className={getButtonClasses("todos")}>Todos</button>
+              <button onClick={() => setActiveFilter("ativos")} className={getButtonClasses("ativos")}>Ativos</button>
+              <button onClick={() => setActiveFilter("inativo")} className={getButtonClasses("inativo")}>Inativo</button>
             </div>
             <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium">
               <i data-lucide="plus" className="w-4 h-4"></i>
