@@ -6,6 +6,8 @@ import {
     UserCheck, BarChart3, ListFilter,
     LogOut, X, Pill, Stethoscope, ClipboardList, Layers, Microscope
 } from "lucide-react";
+import { can } from "../utils/auth";
+
 
 type SidebarProps = {
     isOpen: boolean;
@@ -18,6 +20,8 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
     const location = useLocation(); // hook para pegar a rota atual
 
     const isActive = (path: string) => location.pathname === path;
+
+   
 
     return (
         <>
@@ -64,6 +68,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <nav className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
                         <ul className="space-y-2">
                             <li>
+                                {can("painel", "per_view") && 
                                 <Link
                                     to="/painel"
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
@@ -74,9 +79,10 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     <LayoutDashboard className="w-5 h-5" />
                                     <span>Painel</span>
-                                </Link>
+                                </Link>}
                             </li>
                             <li>
+                                {can("atendimento", "per_view") && 
                                 <Link
                                     to="/atendimento"
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
@@ -87,9 +93,10 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     <ClipboardList className="w-5 h-5" />
                                     <span>Atendimento</span>
-                                </Link>
+                                </Link>}
                             </li>
                             <li>
+                                {can("agendamento", "per_view") && 
                                 <Link
                                     to="/agendamento"
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
@@ -100,9 +107,10 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     <Calendar className="w-5 h-5" />
                                     <span>Agendamento</span>
-                                </Link>
+                                </Link>}
                             </li>
                             <li>
+                                {can("relatorio", "per_view") && 
                                 <Link
                                     to="/relatorio"
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all
@@ -113,7 +121,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     <BarChart3 className="w-5 h-5" />
                                     <span>Relatório</span>
-                                </Link>
+                                </Link>}
                             </li>
                             <li>
                                 <button
@@ -131,82 +139,88 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                                 <ul className={`mt-1 space-y-1 ${open ? "block" : "hidden"}`}>
                                     <li>
+                                        {can("usuario", "per_view") && 
                                         <Link
-                                            to="/usuarios"
+                                            to="/usuario"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/usuarios")
+                                                ${isActive("/usuario")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <UserCheck className="w-5 h-5" />
                                             <span>Usuários</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                     <li>
+                                        {can("paciente", "per_view") && 
                                         <Link
-                                            to="/pacientes"
+                                            to="/paciente"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/pacientes")
+                                                ${isActive("/paciente")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <Users className="w-5 h-5" />
                                             <span>Pacientes</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                     <li>
+                                        {can("medico", "per_view") && 
                                         <Link
-                                            to="/medicos"
+                                            to="/medico"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/medicos")
+                                                ${isActive("/medico")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <Stethoscope className="w-5 h-5" />
                                             <span>Médicos</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                     <li>
+                                        {can("medicamento", "per_view") && 
                                         <Link
-                                            to="/medicamentos"
+                                            to="/medicamento"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/medicamentos")
+                                                ${isActive("/medicamento")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <Pill className="w-5 h-5" />
                                             <span>Medicamentos</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                     <li>
+                                        {can("especialidade", "per_view") &&
                                         <Link
-                                            to="/especialidades"
+                                            to="/especialidade"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/especialidades")
+                                                ${isActive("/especialidade")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <Layers className="w-5 h-5" />
                                             <span>Especialidades</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                     <li>
+                                        {can("exame", "per_view") &&
                                         <Link
-                                            to="/exames"
+                                            to="/exame"
                                             className={`px-4 py-2 rounded-lg flex items-center space-x-3 transition-all
-                                                ${isActive("/exames")
+                                                ${isActive("/exame")
                                                     ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                                                 }`}
                                         >
                                             <Microscope className="w-5 h-5" />
                                             <span>Exames</span>
-                                        </Link>
+                                        </Link>}
                                     </li>
                                 </ul>
                             </li>

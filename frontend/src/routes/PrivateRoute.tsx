@@ -1,16 +1,18 @@
 import React, { ReactNode, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { can } from "../utils/auth";
 
-interface PrivateRouteProps {
-  children: ReactNode;
+interface RouteProtegidaProps {
+  page: string;        // nome da página para verificar permissão
+  children: ReactNode; // aceita 1 ou múltiplos elementos
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+export const PrivateRoute: React.FC<RouteProtegidaProps> = ({ page, children }) => {
   const token = Cookies.get("auth_token_vitalis");
   const navigate = useNavigate();
 
-  // Checagem em tempo real (opcional)
+  // Checagem em tempo real opcional
   useEffect(() => {
     const intervalId = setInterval(() => {
       const token = Cookies.get("auth_token_vitalis");
@@ -22,11 +24,17 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     return () => clearInterval(intervalId);
   }, [navigate]);
 
-  // Se não houver token, redireciona imediatamente
+  // 1️⃣ Verifica se está logado
   if (!token) {
     return <Navigate to="/sair" replace />;
   }
 
+  // 2️⃣ Verifica se tem permissão
+  if (!can(page, "per_view")) {
+    return <Navigate to="/sem-acesso" replace />;
+  }
+
+  // 3️⃣ Renderiza os filhos
   return <>{children}</>;
 };
 

@@ -8,7 +8,7 @@ function Exit() {
     useEffect(() => {
         // Remove o cookie 'auth_token'
         Cookies.remove('auth_token_vitalis');
-        Cookies.remove('auth_nome_vitalis');
+       // Cookies.remove('auth_nome_vitalis');
        // Cookies.remove('auth_permissoes');
 
         // Redireciona para a página de login após remover o cookie

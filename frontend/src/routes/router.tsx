@@ -17,6 +17,8 @@ import Exam from "../pages/Exam";
 
 import PrivateRoute from "./PrivateRoute";
 
+
+
 const router = createBrowserRouter(
   [
     {
@@ -27,7 +29,7 @@ const router = createBrowserRouter(
         {
           path: "/",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="painel">
               <Dashboard />
             </PrivateRoute>
           ),
@@ -43,7 +45,7 @@ const router = createBrowserRouter(
         {
           path: "/painel",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="painel">
               <Dashboard />
             </PrivateRoute>
           ),
@@ -51,7 +53,7 @@ const router = createBrowserRouter(
         {
           path: "/atendimento",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="atendimento">
               <Service />
             </PrivateRoute>
           ),
@@ -59,7 +61,7 @@ const router = createBrowserRouter(
         {
           path: "/agendamento",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="agendamento">
               <Appointment />
             </PrivateRoute>
           ),
@@ -67,55 +69,55 @@ const router = createBrowserRouter(
         {
           path: "/relatorio",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="relatorio">
               <Report />
             </PrivateRoute>
           ),
         },
         {
-          path: "/usuarios",
+          path: "/usuario",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="usuario">
               <Users />
             </PrivateRoute>
           ),
         },
         {
-          path: "/pacientes",
+          path: "/paciente",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="paciente">
               <Patient />
             </PrivateRoute>
           ),
         },
         {
-          path: "/medicos",
+          path: "/medico",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="medico">
               <Doctor />
             </PrivateRoute>
           ),
         },
         {
-          path: "/medicamentos",
+          path: "/medicamento",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="medicamento">
               <Medication />
             </PrivateRoute>
           ),
         },
         {
-          path: "/especialidades",
+          path: "/especialidade",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="especialidade">
               <Specialty />
             </PrivateRoute>
           ),
         },
         {
-          path: "/exames",
+          path: "/exame",
           element: (
-            <PrivateRoute>
+            <PrivateRoute page="exame">
               <Exam />
             </PrivateRoute>
           ),

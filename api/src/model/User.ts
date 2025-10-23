@@ -60,6 +60,15 @@ const UserModel = {
     return rows[0];
   },
 
+  async findPermissions(level: number) {
+    const [rows] = await db.query<RowDataPacket[]>(
+      "SELECT * FROM vw_permissions WHERE level_id = ?",
+      [level]
+    );
+    return rows;
+  },
+
+
   async findByEmailId(email: string, id: number) {
     const [rows] = await db.query<RowDataPacket[]>(
       "SELECT * FROM user WHERE email = ? AND id != ?",

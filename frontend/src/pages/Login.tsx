@@ -37,7 +37,7 @@ function Login() {
       } else if (response.data.type === 'sucesso') {
 
         Cookies.set('auth_token_vitalis', response.data.token, { expires: 1 / 3, secure: true, sameSite: 'Strict' }); // expire em 8h
-        Cookies.set('auth_nome_vitalis', response.data.user.nome, { expires: 1 / 3, secure: true, sameSite: 'Strict' }); // expire em 8h
+       // Cookies.set('auth_nome_vitalis', response.data.user.nome, { expires: 1 / 3, secure: true, sameSite: 'Strict' }); // expire em 8h
         // Cookies.set('auth_permissoes', response.data.permissoes, { expires: 1/3, secure: true, sameSite: 'Strict' }); // expire em 8h
 
         navigate('/');

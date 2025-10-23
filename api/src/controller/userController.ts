@@ -107,6 +107,8 @@ const userController = {
       const user = await UserModel.findByEmail(email);
       if (!user) return res.status(404).json({ message: "E-mail ou senha inválida.", type: "outros" });
 
+      const permissions = await UserModel.findPermissions(user.level);
+      
       // Caso precise redefinir senha
       if (user.password === null && user.status === 1) {
         return res.status(200).json({ id: user.id, login: user.login, message: "Redefinir Senha", type: "redefinir" });
@@ -116,7 +118,7 @@ const userController = {
       if (!passwordMatch) return res.status(401).json({ message: "E-mail ou senha inválida", type: "outros" });
       if (user.status === 0) return res.status(400).json({ message: "Bloqueado", type: "outros" });
 
-      const token = jwt.sign({ userId: user.id, empresaId: user.company }, SECRET, { expiresIn: 28800 });
+      const token = jwt.sign({ userId: user.id, empresaId: user.company, permissoes: permissions }, SECRET, { expiresIn: 28800 });
 
       await UserModel.updateLastLogin(user.id, new Date());
 
@@ -124,8 +126,8 @@ const userController = {
         user: { nome: user.name, id: user.id },
         message: "Sucesso",
         type: "sucesso",
-        token,
-        permissoes: ""
+        token
+        
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message || err });

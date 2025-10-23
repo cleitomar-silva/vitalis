@@ -4,12 +4,11 @@ import {
   // UserCheck, CalendarX, Moon,
   // Users as UsersIcon,  UserCog, MessageSquare, Stethoscope 
 } from "lucide-react";
-
+import { can } from "../utils/auth";
 
 
 
 function Users() {
-
 
   // 🔹 Estado para o filtro selecionado
   const [activeFilter, setActiveFilter] = useState<"todos" | "ativos" | "inativo">("todos");
@@ -39,8 +38,12 @@ function Users() {
   }, [setHeaderTitle, setHeaderSubtitle]);
 
 
+ // const canView = can("usuario", "per_view");
+  const canCreate = can("usuario", "per_create");
 
-
+ // if (!canView) {
+ //   return (<p className="mt-2 ml-2 mb-2 text-red-700">Você não tem permissão para ver esta página.</p>);
+ // }
 
   return (
     <>
@@ -55,10 +58,13 @@ function Users() {
               <button onClick={() => setActiveFilter("ativos")} className={getButtonClasses("ativos")}>Ativos</button>
               <button onClick={() => setActiveFilter("inativo")} className={getButtonClasses("inativo")}>Inativo</button>
             </div>
-            <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium">
-              <i data-lucide="plus" className="w-4 h-4"></i>
-              <span className="hidden sm:inline">Create Staff</span>
-            </button>
+            { 
+              canCreate &&
+              <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium">
+                <i data-lucide="plus" className="w-4 h-4"></i>
+                <span className="hidden sm:inline">Create Staff</span>
+              </button>
+            }
           </div>
         </div>
 
