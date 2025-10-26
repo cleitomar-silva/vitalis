@@ -60,8 +60,9 @@ function Login() {
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className={"flex items-center justify-center"}>
+            {/*
             <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Risoleta brand">
-              <title>Risoleta</title>
+              <title>Dr.Time</title>
               <g transform="translate(8,8)">
                 <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
                 <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)"/>
@@ -69,12 +70,26 @@ function Login() {
               </g>
               <g transform="translate(86,44)">
                 <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="#2D2D2D">
-                  Risoleta
+                  Dr.Time
                 </text>
                 <text x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="#3E4A61" >
                   Tecnologia que cuida
                 </text>
               </g>
+            </svg> */}
+             <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Dr. Time brand">
+                <title>Dr. Time</title>
+                <g transform="translate(8,8)">
+                    <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
+                    <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)"/>
+                    <path d="M22 18 Q28 10 34 18 M22 18 Q28 13 34 18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"  transform="translate(6,4)"/>
+                </g>  
+                <g transform="translate(86,44)">
+                    <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">Dr.Time</text>
+                    <text x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">
+                    Tecnologia que cuida
+                    </text>
+                </g>
             </svg>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">

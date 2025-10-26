@@ -7,6 +7,7 @@ import {
     LogOut, X, Pill, Stethoscope, ClipboardList, Layers, Microscope
 } from "lucide-react";
 import { can } from "../utils/auth";
+// import logo from '../assets/img/logo3.png';
 
 
 type SidebarProps = {
@@ -38,22 +39,30 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
                         <div>
                             <Link to="/" className="flex items-center space-x-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Risoleta brand">
-                                    <title>Risoleta</title>
+                                <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Dr. Time brand">
+                                    <title>Dr. Time</title>
                                     <g transform="translate(8,8)">
                                         <rect x="0" y="0" width="64" height="64" rx="10" fill="#8b47ff" />
-                                        <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)" />
-                                        <path d="M12 46 Q32 62 52 46" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,2)" />
-                                    </g>
+                                        <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)"/>
+                                        <path d="M22 18 Q28 10 34 18 M22 18 Q28 13 34 18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"  transform="translate(6,4)"/>
+                                    </g>  
                                     <g transform="translate(86,44)">
-                                        <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="currentColor" className="text-neutral-800 dark:text-neutral-50 ">
-                                            Risoleta
-                                        </text>
-                                        <text  x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="currentColor" className="text-neutral-800 dark:text-neutral-50" >
-                                            Tecnologia que cuida
+                                        <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">Dr.Time</text>
+                                        <text x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">
+                                        Tecnologia que cuida
                                         </text>
                                     </g>
                                 </svg>
+
+                                {/*
+                                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center">
+                                    <img src={logo} alt="Dr.Time" className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-display font-bold text-gray-900 dark:text-white">Dr.Time</h1>
+                                    <p className="text-sm font-body text-gray-500 dark:text-gray-400">Tecnologia que cuida</p>
+                                </div>
+                                */}
                             </Link>
                         </div>
                         <button

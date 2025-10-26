@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import {
   // UserCheck, CalendarX, Moon,
   // Users as UsersIcon,  UserCog, MessageSquare, Stethoscope 
+  Plus 
 } from "lucide-react";
 import { can } from "../utils/auth";
 
@@ -60,8 +61,9 @@ function Users() {
             </div>
             { 
               canCreate &&
-              <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium">
-                <i data-lucide="plus" className="w-4 h-4"></i>
+              <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium cursor-pointer">
+               
+                <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Create Staff</span>
               </button>
             }

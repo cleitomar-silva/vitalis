@@ -108,7 +108,7 @@ const userController = {
       if (!user) return res.status(404).json({ message: "E-mail ou senha inválida.", type: "outros" });
 
       const permissions = await UserModel.findPermissions(user.level);
-      
+
       // Caso precise redefinir senha
       if (user.password === null && user.status === 1) {
         return res.status(200).json({ id: user.id, login: user.login, message: "Redefinir Senha", type: "redefinir" });
@@ -127,7 +127,7 @@ const userController = {
         message: "Sucesso",
         type: "sucesso",
         token
-        
+
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message || err });
@@ -213,7 +213,33 @@ const userController = {
     } catch (err: any) {
       res.status(500).json({ error: err.message || err });
     }
+  },
+
+  // --------------------------
+  // Pesquisa e lista
+  // --------------------------
+  getSearch: async (req: AuthRequest, res: Response) => {
+    try {
+      // Pegando os parâmetros da URL:
+      const { por_pagina, pagina, search } = req.query;
+
+      // Convertendo para tipos seguros:
+      const porPagina = Number(por_pagina) || 10; // padrão = 10
+      const paginaAtual = Number(pagina) || 1;    // padrão = 1
+      const termoBusca = String(search || "").trim(); // string segura
+
+      const { empresaId } = req.user as any;
+     
+      const users = await UserModel.search(empresaId,porPagina,paginaAtual,termoBusca);
+       res.json(users);
+       
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || err });
+    }
   }
+
+
+
 };
 
 export default userController;

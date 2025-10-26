@@ -10,7 +10,7 @@ export interface IUser {
   email: string;
   password: string;
   level: string;
-  login: string;  
+  login: string;
   company?: number;
   status?: string;
   created_at?: Date;
@@ -151,6 +151,66 @@ const UserModel = {
     );
     return rows[0];
   },
+
+  async searchold(companyId: number, porPagina: number, paginaAtual: number, termoBusca: string) {
+  
+    const [rows] = await db.query<RowDataPacket[]>(
+      "SELECT * FROM user WHERE id = ? AND company = ?",
+      [companyId]
+    );
+    return rows[0];
+  },
+
+  async search(
+    companyId: number,
+    porPagina: number,
+    paginaAtual: number,
+    termoBusca: string
+  ): Promise<{ lista: RowDataPacket[]; totalPaginas: number }> {
+
+    // Monta a condição WHERE
+    let where = "";
+    const queryParams: (string | number)[] = [companyId];
+
+    if (termoBusca.trim()) {
+      where = " AND name LIKE ? ";
+      queryParams.push(`%${termoBusca.trim()}%`);
+    }
+
+    // Calcula OFFSET
+    const offset = (paginaAtual - 1) * porPagina;
+
+    // 1️⃣ Consulta principal: lista de registros
+    const sqlList = `
+      SELECT *
+      FROM user
+      WHERE company = ? ${where}
+      ORDER BY id DESC
+      LIMIT ?, ?
+    `;
+
+    // adiciona offset e limit aos parâmetros
+    const listParams = [...queryParams, offset, porPagina];
+
+    const [lista] = await db.query<RowDataPacket[]>(sqlList, listParams);
+
+    // 2️⃣ Contagem total de registros
+    const sqlCount = `
+      SELECT COUNT(id) AS total_registros
+      FROM user
+      WHERE company = ? ${where}
+    `;
+
+    const [countRows] = await db.query<RowDataPacket[]>(sqlCount, queryParams);
+    const totalRegistros = countRows[0].total_registros as number;
+
+    const totalPaginas = Math.ceil(totalRegistros / porPagina);
+
+    return { lista, totalPaginas };
+  }
+
+
+
 };
 
 export default UserModel;
