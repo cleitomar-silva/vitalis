@@ -231,7 +231,7 @@ const userController = {
       const { empresaId } = req.user as any;
      
       const users = await UserModel.search(empresaId,porPagina,paginaAtual,termoBusca);
-       res.json(users);
+      res.json(users);
        
     } catch (err: any) {
       res.status(500).json({ error: err.message || err });

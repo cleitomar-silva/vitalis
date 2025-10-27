@@ -37,7 +37,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <div className="flex flex-col h-full">
                     {/* Logo and Close Button Section */}
                     <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center h-[85px]">
-                        <div>
+                        <div className="">
                             <Link to="/" className="flex items-center space-x-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width={220} height={70} viewBox="0 0 220 80" role="img" aria-label="Dr. Time brand">
                                     <title>Dr. Time</title>
@@ -46,13 +46,16 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         <path d="M10 36 L18 24 L26 40 L34 30 L42 36" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(6,6)"/>
                                         <path d="M22 18 Q28 10 34 18 M22 18 Q28 13 34 18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"  transform="translate(6,4)"/>
                                     </g>  
+                                   
                                     <g transform="translate(86,44)">
                                         <text x="0" y="0" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="600" fontSize="20" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">Dr.Time</text>
                                         <text x="0" y="18" fontFamily="Poppins, Nunito, Arial, sans-serif" fontWeight="400" fontSize="11" fill="currentColor" className="text-neutral-800 dark:text-neutral-50">
                                         Tecnologia que cuida
                                         </text>
                                     </g>
+                                    
                                 </svg>
+                               
 
                                 {/*
                                 <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center">

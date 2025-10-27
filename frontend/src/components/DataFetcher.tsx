@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {apiBaseUrl} from "../config";
 import Cookies from "js-cookie";
 
-const SetorDataFetcher = () => {
+const DataFetcher = () => {
 
     // TODO
 
@@ -20,7 +20,7 @@ const SetorDataFetcher = () => {
             const page = Math.min(currentPage + 1, totalPages);
             // const result = await axios.get(`${API_URL}?&page=${page}`);
 
-            const result = await axios.get(`${apiBaseUrl}/search?por_pagina=10&pagina=${page}&search=${searchTerm}`, {
+            const result = await axios.get(`${apiBaseUrl}/users/search?por_pagina=10&pagina=${page}&search=${searchTerm}`, {
                 headers: {
                     'x-access-token': `${tokenGet}`
                 },
@@ -30,7 +30,7 @@ const SetorDataFetcher = () => {
             setTotalPages(result.data.totalPaginas);
             setLoading(false);
 
-            // console.log(result.data);
+             console.log(result);
         };
         fetchData();
     }, [currentPage]);
@@ -48,4 +48,4 @@ const SetorDataFetcher = () => {
     }
 }
 
-export default SetorDataFetcher;
+export default DataFetcher;

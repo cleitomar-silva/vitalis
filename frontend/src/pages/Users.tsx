@@ -3,13 +3,83 @@ import { useOutletContext } from "react-router-dom";
 import {
   // UserCheck, CalendarX, Moon,
   // Users as UsersIcon,  UserCog, MessageSquare, Stethoscope 
-  Plus 
+  Plus, Mail, Building, LogIn   
 } from "lucide-react";
 import { can } from "../utils/auth";
-
-
+import Preloader from "../components/Preloader";
+import Cookies from "js-cookie";
+import { apiBaseUrl } from '../config';
+import axios, { AxiosError } from 'axios';
 
 function Users() {
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+
+
+  const [loading, setLoading] = useState("");
+  const tokenGet = Cookies.get('auth_token_vitalis');
+  const [infoUsers, setinfoUsers] = useState<any[]>([]);
+
+
+
+
+  // const search = async (event: React.FormEvent<HTMLFormElement>) => {
+  const search = async () => {
+    setLoading("visible");
+
+    try {
+      const page = Math.min(currentPage + 1, totalPages);
+
+      const result = await axios.get(
+        `${apiBaseUrl}/users/search?por_pagina=10&pagina=${page}&search=${searchTerm}`,
+        {
+          headers: { 'x-access-token': `${tokenGet}` },
+        }
+      );
+
+      console.log(result.data.lista);
+
+      if (result.data) {
+        setinfoUsers(result.data.lista);
+      }
+
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      console.error(err.response?.data?.message || "Falha ao buscar usuários");
+    } finally {
+      setLoading("");
+    }
+  };
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    search();
+  };
+
+  // opcionais
+  const getInitials = (name: string) => {
+    if (!name) return "NA";
+    const words = name.split(" ");
+    const initials = words.map(word => word[0].toUpperCase()).join("");
+    return initials.slice(0, 2); // limitar a 2 letras
+  };
+
+  const gradientColors = [
+    "from-blue-500 to-purple-600",
+    "from-pink-500 to-red-600",    
+    "from-green-500 to-teal-600",
+    "from-indigo-500 to-purple-600",
+    "from-yellow-500 to-orange-600",
+    "from-cyan-500 to-blue-600",
+  ];
+
+
+
+
+
+
 
   // 🔹 Estado para o filtro selecionado
   const [activeFilter, setActiveFilter] = useState<"todos" | "ativos" | "inativo">("todos");
@@ -26,28 +96,32 @@ function Users() {
     return `${base} ${activeFilter === type ? active : inactive}`;
   };
 
-
   const { setHeaderTitle, setHeaderSubtitle } = useOutletContext<{
     setHeaderTitle: (title: string) => void;
     setHeaderSubtitle: (subtitle: string) => void;
   }>();
 
-  // Define o título e subtítulo quando a página é carregada
+  // Define o título e subtítulo quando a página é carregada e lista os usuarios
   useEffect(() => {
     setHeaderTitle("Gestão de Usuários");
     setHeaderSubtitle("Gerenciar acessos ao sistema");
+    search();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setHeaderTitle, setHeaderSubtitle]);
 
 
- // const canView = can("usuario", "per_view");
+  // const canView = can("usuario", "per_view");
   const canCreate = can("usuario", "per_create");
 
- // if (!canView) {
- //   return (<p className="mt-2 ml-2 mb-2 text-red-700">Você não tem permissão para ver esta página.</p>);
- // }
+  // if (!canView) {
+  //   return (<p className="mt-2 ml-2 mb-2 text-red-700">Você não tem permissão para ver esta página.</p>);
+  // }
 
   return (
     <>
+      <Preloader visible={loading} />
+
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
 
 
@@ -55,14 +129,18 @@ function Users() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => setActiveFilter("todos")} className={getButtonClasses("todos")}>Todos</button>
-              <button onClick={() => setActiveFilter("ativos")} className={getButtonClasses("ativos")}>Ativos</button>
-              <button onClick={() => setActiveFilter("inativo")} className={getButtonClasses("inativo")}>Inativo</button>
+
+              {/* TODO - quando clicar em 'Ativos' enviar para o backend o nº 1 e quando clicar em 'Inativo' enviar o nº 2 */}
+              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 mb-6">
+                <button onClick={() => setActiveFilter("todos")} className={getButtonClasses("todos")}>Todos</button>
+                <button onClick={() => setActiveFilter("ativos")} className={getButtonClasses("ativos")}>Ativos</button>
+                <button onClick={() => setActiveFilter("inativo")} className={getButtonClasses("inativo")}>Inativo</button>
+              </form>
             </div>
-            { 
+            {
               canCreate &&
               <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium cursor-pointer">
-               
+
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Create Staff</span>
               </button>
@@ -72,263 +150,62 @@ function Users() {
 
         {/* Staff Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
           {/* Staff Card 1 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  DJ
+          {infoUsers.map((user, index) => (                         
+            
+            <div key={user.id || index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">                  
+                  <div className={`  w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-r ${gradientColors[index % gradientColors.length]}`}>
+  
+                    {getInitials(user.name)}
+                  </div>
+                  <div className="w-40">
+                    <h3 className="font-semibold text-gray-800 dark:text-white truncate">{user.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{user.level_name}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Dr. James Johnson</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">General Medicine</p>
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    user.status === 1
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                  }`}
+                >
+                  {user.status_name || "Unknown"}
+                </span>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">                  
+                  <Mail className="w-4 h-4 mr-2" />
+                  <span className="truncate">{user.email}</span>
                 </div>
-              </div>
-              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">On Duty</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-001</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="clock" className="w-4 h-4 mr-2"></i>
-                <span>Shift: 8:00 AM - 6:00 PM</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>Room 101-105</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 12 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm">Schedule</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Staff Card 2 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  NS
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">                  
+                  <LogIn className="w-4 h-4 mr-2" />
+                  <span className="truncate">{user.login}</span>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Nurse Miller</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ICU Specialist</p>
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <Building className="w-4 h-4 mr-2" />
+                  <span className="truncate">{user.company_name}</span>
+                </div>
+                                
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Último login: {user.last_login}</span>
+                <div className="flex items-center space-x-2">
+                  <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
+                  <span className="text-gray-600">|</span>
+                  <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Alterar</button>
+
                 </div>
               </div>
-              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">On Duty</span>
             </div>
+          ))}
 
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-015</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 987-6543</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="clock" className="w-4 h-4 mr-2"></i>
-                <span>Shift: 7:00 AM - 7:00 PM</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>ICU Ward</span>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 8 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm">Schedule</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Staff Card 3 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  DW
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Dr. Maria Wilson</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Cardiology</p>
-                </div>
-              </div>
-              <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-medium rounded-full">On Leave</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-003</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 456-7890</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="calendar-x" className="w-4 h-4 mr-2"></i>
-                <span>Leave: Dec 19-23, 2024</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>Cardiology Wing</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 15 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 text-sm">Contact</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Staff Card 4 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  TB
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Tech. Robert Brown</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Lab Technician</p>
-                </div>
-              </div>
-              <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-medium rounded-full">Night Shift</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-028</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 321-0987</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="moon" className="w-4 h-4 mr-2"></i>
-                <span>Shift: 10:00 PM - 6:00 AM</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>Laboratory</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 6 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm">Schedule</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Staff Card 5 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  AD
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Admin Lisa Davis</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Patient Coordinator</p>
-                </div>
-              </div>
-              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">On Duty</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-042</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 654-3210</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="clock" className="w-4 h-4 mr-2"></i>
-                <span>Shift: 9:00 AM - 5:00 PM</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>Reception Desk</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 4 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm">Schedule</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Staff Card 6 */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  DR
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Dr. Alex Rodriguez</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Emergency Medicine</p>
-                </div>
-              </div>
-              <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-medium rounded-full">Emergency</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="badge" className="w-4 h-4 mr-2"></i>
-                <span>ID: EMP-007</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="phone" className="w-4 h-4 mr-2"></i>
-                <span>+1 (555) 789-0123</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="zap" className="w-4 h-4 mr-2"></i>
-                <span>Shift: 24/7 On-Call</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <i data-lucide="map-pin" className="w-4 h-4 mr-2"></i>
-                <span>Emergency Room</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Experience: 10 years</span>
-              <div className="flex items-center space-x-2">
-                <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm">View Profile</button>
-                <button className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm">Emergency Contact</button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Pagination */}

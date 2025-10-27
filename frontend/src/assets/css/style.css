@@ -146,4 +146,37 @@
   width: 100%;
 }
 
+#preloader{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    height: 100%;
+    width: 100%;
+    visibility: hidden;
+    /* background: #ffffff82; */
+    background: #10101082;
+    backdrop-filter: blur(10px);
+}
+
+#status-preloader{
+    width: 900px;
+    height: 600px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -300px 0 0 -450px;
+    background: url(../img/load2.gif) center no-repeat;
+    background-size: 70px;
+}
+
+.visible{
+  visibility: visible!important;
+} 
+
 

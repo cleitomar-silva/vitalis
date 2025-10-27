@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./assets/style.css";
-import "./assets/output.css";
+import "./assets/css/style.css";
+import "./assets/css/output.css";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import ThemeToggle from "./components/ThemeToggle";

@@ -182,10 +182,19 @@ const UserModel = {
 
     // 1️⃣ Consulta principal: lista de registros
     const sqlList = `
-      SELECT *
-      FROM user
-      WHERE company = ? ${where}
-      ORDER BY id DESC
+      SELECT 
+        u.id, u.name, u.email, u.login, u.status, DATE_FORMAT(u.last_login, '%d/%m/%Y' ) AS last_login,
+        l.name AS level_name,
+        c.name AS company_name, 
+        s.name AS status_name
+
+      FROM user u
+      INNER JOIN level l ON l.id = u.level
+      INNER JOIN company c ON c.id = u.company
+      INNER JOIN status s ON s.id = u.status
+
+      WHERE u.company = ? ${where}
+      ORDER BY u.id DESC
       LIMIT ?, ?
     `;
 
