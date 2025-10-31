@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import {
-  // UserCheck, CalendarX, Moon,
-  // Users as UsersIcon,  UserCog, MessageSquare, Stethoscope 
+import {  
   Plus, Mail, Building, LogIn   
 } from "lucide-react";
 import { can } from "../utils/auth";
@@ -10,39 +8,44 @@ import Preloader from "../components/Preloader";
 import Cookies from "js-cookie";
 import { apiBaseUrl } from '../config';
 import axios, { AxiosError } from 'axios';
+import PaginationButtons from "../components/Pagination";
+
 
 function Users() {
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0); // novo estado
 
 
   const [loading, setLoading] = useState("");
   const tokenGet = Cookies.get('auth_token_vitalis');
   const [infoUsers, setinfoUsers] = useState<any[]>([]);
 
-
-
-
-  // const search = async (event: React.FormEvent<HTMLFormElement>) => {
   const search = async () => {
     setLoading("visible");
-
+     
     try {
-      const page = Math.min(currentPage + 1, totalPages);
+     
+      const page = currentPage + 1; // página real do backend
+      
+      let statusValue = "";
+      if (activeFilter === "ativos") statusValue = "1";
+      else if (activeFilter === "inativo") statusValue = "2";
 
       const result = await axios.get(
-        `${apiBaseUrl}/users/search?por_pagina=10&pagina=${page}&search=${searchTerm}`,
+        `${apiBaseUrl}/users/search?por_pagina=9&pagina=${page}&status_value=${statusValue}`,
         {
           headers: { 'x-access-token': `${tokenGet}` },
         }
       );
 
-      console.log(result.data.lista);
+     // console.log(result.data.lista);      
 
       if (result.data) {
         setinfoUsers(result.data.lista);
+        setTotalPages(result.data.totalPaginas || 1);  // 🔹 atualizar totalPages
+        setTotalRecords(result.data.totalRegistros || 0); // 🔹 atualizar totalRecords
       }
 
     } catch (error) {
@@ -51,11 +54,6 @@ function Users() {
     } finally {
       setLoading("");
     }
-  };
-
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    search();
   };
 
   // opcionais
@@ -74,9 +72,6 @@ function Users() {
     "from-yellow-500 to-orange-600",
     "from-cyan-500 to-blue-600",
   ];
-
-
-
 
 
 
@@ -104,11 +99,18 @@ function Users() {
   // Define o título e subtítulo quando a página é carregada e lista os usuarios
   useEffect(() => {
     setHeaderTitle("Gestão de Usuários");
-    setHeaderSubtitle("Gerenciar acessos ao sistema");
-    search();
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setHeaderSubtitle("Gerenciar acessos ao sistema");  
+ 
   }, [setHeaderTitle, setHeaderSubtitle]);
+
+  useEffect(() => {
+    search();
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, activeFilter]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [activeFilter]);
 
 
   // const canView = can("usuario", "per_view");
@@ -129,20 +131,16 @@ function Users() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-
-              {/* TODO - quando clicar em 'Ativos' enviar para o backend o nº 1 e quando clicar em 'Inativo' enviar o nº 2 */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 mb-6">
-                <button onClick={() => setActiveFilter("todos")} className={getButtonClasses("todos")}>Todos</button>
-                <button onClick={() => setActiveFilter("ativos")} className={getButtonClasses("ativos")}>Ativos</button>
-                <button onClick={() => setActiveFilter("inativo")} className={getButtonClasses("inativo")}>Inativo</button>
-              </form>
+                <button onClick={() => { setActiveFilter("todos"); }} className={getButtonClasses("todos")}>Todos</button>
+                <button onClick={() => { setActiveFilter("ativos"); }} className={getButtonClasses("ativos")}>Ativos</button>
+                <button onClick={() => { setActiveFilter("inativo"); }} className={getButtonClasses("inativo")}>Inativo</button>              
             </div>
             {
               canCreate &&
               <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium cursor-pointer">
 
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Create Staff</span>
+                <span className="hidden sm:inline">Novo</span>
               </button>
             }
           </div>
@@ -210,14 +208,15 @@ function Users() {
 
         {/* Pagination */}
         <div className="flex items-center justify-between mt-8">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Showing 1-6 of 47 staff members</p>
-          <div className="flex items-center space-x-2">
-            <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Previous</button>
-            <button className="px-3 py-2 bg-purple-600 text-white rounded-lg">1</button>
-            <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">2</button>
-            <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">3</button>
-            <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Next</button>
-          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Mostrando de {currentPage * 9 + 1} a {Math.min((currentPage + 1) * 9, totalRecords)} de {totalRecords} registros
+          </p>    
+          <PaginationButtons
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+
         </div>
       </main>
 

@@ -165,16 +165,18 @@ const UserModel = {
     companyId: number,
     porPagina: number,
     paginaAtual: number,
-    termoBusca: string
-  ): Promise<{ lista: RowDataPacket[]; totalPaginas: number }> {
+    statusSearch: string
+  ): Promise<{ lista: RowDataPacket[]; totalPaginas: number; totalRegistros: number }> {
 
     // Monta a condição WHERE
     let where = "";
     const queryParams: (string | number)[] = [companyId];
 
-    if (termoBusca.trim()) {
-      where = " AND name LIKE ? ";
-      queryParams.push(`%${termoBusca.trim()}%`);
+    if (statusSearch.trim()) {
+      // where = " AND name LIKE ? ";
+      // queryParams.push(`%${statusSearch.trim()}%`);
+      where = " AND u.status = ? ";
+      queryParams.push(`${statusSearch.trim()}`);
     }
 
     // Calcula OFFSET
@@ -201,13 +203,23 @@ const UserModel = {
     // adiciona offset e limit aos parâmetros
     const listParams = [...queryParams, offset, porPagina];
 
+   
+    // Debug: exibe a query formatada
+   // let formatted = sqlList;
+   // listParams.forEach(param => {
+    //  const value = typeof param === "number" ? param : `'${param}'`;
+   //   formatted = formatted.replace("?", String(value)); // <-- String() resolve o erro
+    //});
+    //console.log("🧩 SQL Formatada:", formatted);
+
+
     const [lista] = await db.query<RowDataPacket[]>(sqlList, listParams);
 
     // 2️⃣ Contagem total de registros
     const sqlCount = `
-      SELECT COUNT(id) AS total_registros
-      FROM user
-      WHERE company = ? ${where}
+      SELECT COUNT(u.id) AS total_registros
+      FROM user u
+      WHERE u.company = ? ${where}
     `;
 
     const [countRows] = await db.query<RowDataPacket[]>(sqlCount, queryParams);
@@ -215,7 +227,7 @@ const UserModel = {
 
     const totalPaginas = Math.ceil(totalRegistros / porPagina);
 
-    return { lista, totalPaginas };
+    return { lista, totalPaginas, totalRegistros };
   }
 
 

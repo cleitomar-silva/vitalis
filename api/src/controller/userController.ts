@@ -221,16 +221,18 @@ const userController = {
   getSearch: async (req: AuthRequest, res: Response) => {
     try {
       // Pegando os parâmetros da URL:
-      const { por_pagina, pagina, search } = req.query;
+      const { por_pagina, pagina, status_value } = req.query;
 
       // Convertendo para tipos seguros:
-      const porPagina = Number(por_pagina) || 10; // padrão = 10
+      const porPagina = Number(por_pagina) || 9; // padrão = 9
       const paginaAtual = Number(pagina) || 1;    // padrão = 1
-      const termoBusca = String(search || "").trim(); // string segura
+      const statusSearch = String(status_value || "").trim(); // string segura
 
       const { empresaId } = req.user as any;
      
-      const users = await UserModel.search(empresaId,porPagina,paginaAtual,termoBusca);
+      const users = await UserModel.search(empresaId,porPagina,paginaAtual,statusSearch);
+
+            
       res.json(users);
        
     } catch (err: any) {
