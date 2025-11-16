@@ -29,8 +29,11 @@ export const PrivateRoute: React.FC<RouteProtegidaProps> = ({ page, children }) 
     return <Navigate to="/sair" replace />;
   }
 
+  
+
   // 2️⃣ Verifica se tem permissão
   if (!can(page, "per_view")) {
+    
     return <Navigate to="/sem-acesso" replace />;
   }
 

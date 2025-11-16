@@ -27,7 +27,7 @@ function Login() {
         password,
       });
 
-      console.log(response.data);
+     // console.log(response.data);
       // setRetorno(response.data.message);
 
       if (response.data.type === 'redefinir') {

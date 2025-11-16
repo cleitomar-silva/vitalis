@@ -166,7 +166,7 @@ function Users() {
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    user.status === 1
+                    user.status === "1"
                       ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                       : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                   }`}

@@ -2,6 +2,8 @@
 /node_modules
 /.pnp
 .pnp.js
+/dados_postgres
+
 
 # Build
 /dist

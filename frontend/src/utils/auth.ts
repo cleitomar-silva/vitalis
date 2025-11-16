@@ -4,10 +4,10 @@ import { jwtDecode } from "jwt-decode";
 
 type Permissao = {
   page_name: string;
-  per_view: number;
-  per_create: number;
-  per_edit: number;
-  per_delete: number;
+  per_view: string;
+  per_create: string;
+  per_edit: string;
+  per_delete: string;
 };
 
 type TokenPayload = {
@@ -18,7 +18,8 @@ type TokenPayload = {
 };
 
 export function getAuthData(): TokenPayload | null {
-  const token = Cookies.get("auth_token_vitalis");
+  const token = Cookies.get("auth_token_vitalis");  
+
   if (!token) return null;  
 
   try {
@@ -36,7 +37,8 @@ export function getPermissoes(): Permissao[] {
 }
 
 export function can(page: string, action: keyof Omit<Permissao, "page_name">): boolean {
-  const perm = getPermissoes().find(p => p.page_name === page);
+  
+  const perm = getPermissoes().find(p => p.page_name === page);  
 
-  return perm ? perm[action] === 1 : false;
+  return perm ? perm[action] === "1" : false;
 }

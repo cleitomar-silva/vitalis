@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api
+    container_name: vitalis-api
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./api:/app                   # código fonte
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:root@db:5432/vitalis
+    depends_on:
+      - db
+    command: npm run dev             # roda Nodemon dentro do container
+
+  frontend:
+    build: ./frontend
+    container_name: vitalis-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development    
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - WATCHPACK_POLLING=true
+      - HOST=0.0.0.0      
+    depends_on:
+      - api
+    command: npm start
+
+  db:
+    image: postgres:17
+    container_name: vitalis-db-postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: vitalis
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./dados_postgres:/var/lib/postgresql/data
+
+
+
