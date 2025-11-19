@@ -5,6 +5,7 @@ import { SECRET } from "../utils/secretJWT";
 import { inverterDataHora } from "../utils/utils";
 import UserModel, { IUser, IUserCreate } from "../model/User";
 import { AuthRequest } from "../middlewares/authMiddlewareTypes";
+import { toZonedTime } from 'date-fns-tz';
 
 
 const SALT_ROUNDS = 10;
@@ -42,7 +43,9 @@ const userController = {
 
       const token = jwt.sign({ userId: user.id, empresaId: user.company, permissoes: permissions }, SECRET, { expiresIn: 28800 });
 
-      await UserModel.updateLastLogin(user.id, new Date());
+      const timeZoneNow: Date = toZonedTime(new Date(), 'America/Sao_Paulo');
+
+      await UserModel.updateLastLogin(user.id, timeZoneNow);
 
       res.status(200).json({
         user: { nome: user.name, id: user.id },
