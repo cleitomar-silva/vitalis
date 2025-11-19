@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import {  
-  Plus, Mail, Building, LogIn   
+import {
+  Plus, Mail, Building, LogIn, X, Clock, User
 } from "lucide-react";
 import { can } from "../utils/auth";
 import Preloader from "../components/Preloader";
@@ -23,11 +23,11 @@ function Users() {
 
   const search = async () => {
     setLoading("visible");
-     
+
     try {
-     
+
       const page = currentPage + 1; // página real do backend
-      
+
       let statusValue = "";
       if (activeFilter === "ativos") statusValue = "1";
       else if (activeFilter === "inativo") statusValue = "2";
@@ -39,7 +39,7 @@ function Users() {
         }
       );
 
-     // console.log(result.data.lista);      
+      // console.log(result.data.lista);      
 
       if (result.data) {
         setinfoUsers(result.data.lista);
@@ -65,7 +65,7 @@ function Users() {
 
   const gradientColors = [
     "from-blue-500 to-purple-600",
-    "from-pink-500 to-red-600",    
+    "from-pink-500 to-red-600",
     "from-green-500 to-teal-600",
     "from-indigo-500 to-purple-600",
     "from-yellow-500 to-orange-600",
@@ -98,13 +98,13 @@ function Users() {
   // Define o título e subtítulo quando a página é carregada e lista os usuarios
   useEffect(() => {
     setHeaderTitle("Gestão de Usuários");
-    setHeaderSubtitle("Gerenciar acessos ao sistema");  
- 
+    setHeaderSubtitle("Gerenciar acessos ao sistema");
+
   }, [setHeaderTitle, setHeaderSubtitle]);
 
   useEffect(() => {
     search();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, activeFilter]);
 
   useEffect(() => {
@@ -130,9 +130,9 @@ function Users() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-                <button onClick={() => { setActiveFilter("todos"); }} className={getButtonClasses("todos")}>Todos</button>
-                <button onClick={() => { setActiveFilter("ativos"); }} className={getButtonClasses("ativos")}>Ativos</button>
-                <button onClick={() => { setActiveFilter("inativo"); }} className={getButtonClasses("inativo")}>Inativo</button>              
+              <button onClick={() => { setActiveFilter("todos"); }} className={getButtonClasses("todos")}>Todos</button>
+              <button onClick={() => { setActiveFilter("ativos"); }} className={getButtonClasses("ativos")}>Ativos</button>
+              <button onClick={() => { setActiveFilter("inativo"); }} className={getButtonClasses("inativo")}>Inativo</button>
             </div>
             {
               canCreate &&
@@ -149,13 +149,13 @@ function Users() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {/* Staff Card 1 */}
-          {infoUsers.map((user, index) => (                         
-            
+          {infoUsers.map((user, index) => (
+
             <div key={user.id || index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">                  
+                <div className="flex items-center space-x-3">
                   <div className={`  w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-r ${gradientColors[index % gradientColors.length]}`}>
-  
+
                     {getInitials(user.name)}
                   </div>
                   <div className="w-40">
@@ -164,22 +164,21 @@ function Users() {
                   </div>
                 </div>
                 <span
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    user.status === "1"
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${user.status === "1"
                       ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                       : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                  }`}
+                    }`}
                 >
                   {user.status_name || "Unknown"}
                 </span>
               </div>
 
               <div className="space-y-2 mb-4">
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">                  
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <Mail className="w-4 h-4 mr-2" />
                   <span className="truncate">{user.email}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">                  
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <LogIn className="w-4 h-4 mr-2" />
                   <span className="truncate">{user.login}</span>
                 </div>
@@ -187,13 +186,13 @@ function Users() {
                   <Building className="w-4 h-4 mr-2" />
                   <span className="truncate">{user.company_name}</span>
                 </div>
-                                
+
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Último login: {user.last_login}</span>
                 <div className="flex items-center space-x-2">
-                  <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
+                  <button onClick={() => setIsViewUserOpen(true)} data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
                   <span className="text-gray-600">|</span>
                   <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Alterar</button>
 
@@ -209,7 +208,7 @@ function Users() {
         <div className="flex items-center justify-between mt-8">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Mostrando de {currentPage * 9 + 1} a {Math.min((currentPage + 1) * 9, totalRecords)} de {totalRecords} registros
-          </p>    
+          </p>
           <PaginationButtons
             totalPages={totalPages}
             currentPage={currentPage}
@@ -313,70 +312,71 @@ function Users() {
         </div>
       </div>
 
-      {/* MODAL 2 */}
-      <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Staff Details</h3>
-            <button data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
-              <i data-lucide="x" className="w-6 h-6 dark:text-gray-300"></i>
-            </button>
-          </div>
-          <div id="staffDetailsContent" className="text-gray-900 dark:text-white">
-            {/* Staff Header */}
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                JD
-              </div>
-              <div>
-                <h4 className="text-xl font-display font-bold" >John Doe</h4>
-                <p className="text-gray-600 dark:text-gray-400 font-body" >Staff ID: #12345</p>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 mt-1">
-                  Active
-                </span>
-              </div>
+      {/* MODAL 2  View*/}
+      {isViewUserOpen && (
+        <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50  flex items-center justify-center z-50">
+          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Detalhes do Cadastro</h3>
+              <button onClick={() => setIsViewUserOpen(false)} data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
+                <X className="w-6 h-6 dark:text-gray-300" />
+              </button>
             </div>
-
-            {/* Staff Info Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Contact Information */}
-              <div className="space-y-4">
-                <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Contact Information</h5>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i data-lucide="phone" className="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
-                    <span className="font-body" >+1 (555) 123-4567</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <i data-lucide="mail" className="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
-                    <span className="font-body" >john.doe@email.com</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <i data-lucide="calendar" className="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
-                    <span className="font-body" >Age: 32</span>
-                  </div>
+            <div id="staffDetailsContent" className="text-gray-900 dark:text-white">
+              {/* Staff Header */}
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  JD
+                </div>
+                <div>
+                  <h4 className="text-xl font-display font-bold" >Edson Murilo Arthur Lopes2</h4>
+                  <p className="text-gray-600 dark:text-gray-400 font-body" >Administrator</p>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 mt-1">
+                    Ativo
+                  </span>
                 </div>
               </div>
 
-              {/* Recent Activity */}
-              <div className="space-y-4">
-                <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Recent Activity</h5>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i data-lucide="clock" className="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
-                    <span className="font-body" >Last shift: Jan 12, 2025</span>
+              {/* Staff Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Informações</h5>
+                  <div className="space-y-2">                    
+                    <div className="flex items-center space-x-2">
+                      <LogIn className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <span className="font-body" >edson.lopes</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Mail className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <span className="font-body" >john.doe@email.com</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Building className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <span className="font-body" >Clinica Buffet ME</span>
+                    </div>
+                  </div>
+                </div>          
+
+                {/* Recent Activity */}
+                <div className="space-y-4">
+                  <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Último login:</h5>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">                      
+                      <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <span className="font-body" >19/11/2025</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700" >
-              <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body" >Close</button>
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700" >
+                <button onClick={() => setIsViewUserOpen(false)} type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body" >Fechar</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
+      )}
 
     </>
   );
