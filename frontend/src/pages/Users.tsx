@@ -16,11 +16,10 @@ function Users() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0); // novo estado
-
-
   const [loading, setLoading] = useState("");
   const tokenGet = Cookies.get('auth_token_vitalis');
   const [infoUsers, setinfoUsers] = useState<any[]>([]);
+  const [isViewUserOpen, setIsViewUserOpen] = useState(false);
 
   const search = async () => {
     setLoading("visible");
