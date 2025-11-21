@@ -41,7 +41,7 @@ const userController = {
       if (!passwordMatch) return res.status(401).json({ message: "E-mail ou senha inválida", type: "outros" });
       if (user.status === 0) return res.status(400).json({ message: "Bloqueado", type: "outros" });
 
-      const token = jwt.sign({ userId: user.id, empresaId: user.company, permissoes: permissions }, SECRET, { expiresIn: 28800 });
+      const token = jwt.sign({ userId: user.id, nameUser: user.name, empresaId: user.company, companyName: user.company_name, permissoes: permissions }, SECRET, { expiresIn: 28800 });
 
       const timeZoneNow: Date = toZonedTime(new Date(), 'America/Sao_Paulo');
 
