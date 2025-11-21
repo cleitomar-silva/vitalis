@@ -176,7 +176,7 @@ function Header({ onToggleSidebar, title, subtitle }: HeaderProps) {
                                     <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
                                         <Link to="/sair" className="w-full flex items-center justify-center px-4 py-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
                                             <LogOut className="w-4 h-4 mr-2" />
-                                            Sign out
+                                            Sair
                                         </Link>
                                     </div>
                                 </div>
