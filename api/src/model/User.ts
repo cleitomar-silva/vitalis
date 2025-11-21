@@ -13,6 +13,7 @@ export interface IUser {
   level: string;
   login: string;
   company?: number;
+  company_name?: string;
   status?: number;
   created_at?: Date;
   created_by_user_id?: number;
@@ -47,7 +48,11 @@ const UserModel = {
 
   async findByEmail(email: string): Promise<IUser | null> {
     const result: QueryResult = await db.query(
-      "SELECT * FROM users WHERE email = $1",
+      `SELECT u.*, c.name AS company_name
+      FROM users u
+      INNER JOIN company c ON c.id = u.company
+
+      WHERE u.email = $1`,
       [email]
     );
     return result.rows[0] || null;
