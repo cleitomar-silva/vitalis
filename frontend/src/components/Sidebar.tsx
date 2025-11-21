@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { can } from "../utils/auth";
 // import logo from '../assets/img/logo3.png';
+import { useAuthDetails } from "../utils/jwt";
 
 
 type SidebarProps = {
@@ -22,6 +23,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const isActive = (path: string) => location.pathname === path;
 
+    const { nameUser, companyName, initials } = useAuthDetails();
    
 
     return (
@@ -242,11 +244,11 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <div className="border-t border-gray-200 dark:border-gray-700 h-20 flex items-center p-4">
                         <div className="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700 w-full">
                             <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center">
-                                <span className="text-white font-semibold text-sm">DR</span>
+                                <span className="text-white font-semibold text-sm"> {initials}</span>
                             </div>
-                            <div className="flex-1">
-                                <p className="text-sm font-display font-semibold text-gray-900 dark:text-white">Dr. Wilson</p>
-                                <p className="text-xs font-body text-gray-500 dark:text-gray-400">Chief Medical Officer</p>
+                            <div className="flex-1 w-32">
+                                <p className="text-sm font-display font-semibold text-gray-900 dark:text-white truncate  ">{nameUser || 'N/A'}</p>
+                                <p className="text-xs font-body text-gray-500 dark:text-gray-400">{companyName || 'N/A'}</p>
                             </div>
                             <Link to="/sair"><LogOut className="w-4 h-4 text-gray-400" /></Link>
                         </div>
