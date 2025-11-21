@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
-  Plus, Mail, Building, LogIn, X, Clock, User
+  Plus, Mail, Building, LogIn, X, Clock
 } from "lucide-react";
 import { can } from "../utils/auth";
 import Preloader from "../components/Preloader";
@@ -9,7 +9,6 @@ import Cookies from "js-cookie";
 import { apiBaseUrl } from '../config';
 import axios, { AxiosError } from 'axios';
 import PaginationButtons from "../components/Pagination";
-
 
 function Users() {
 
@@ -20,6 +19,47 @@ function Users() {
   const tokenGet = Cookies.get('auth_token_vitalis');
   const [infoUsers, setinfoUsers] = useState<any[]>([]);
   const [isViewUserOpen, setIsViewUserOpen] = useState(false);
+
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+ 
+
+  /* --------------------------------------------------------------------------------------
+  *
+  *  Função para buscar os detalhes do usuário 
+  *  
+  ---------------------------------------------------------------------------------------- */
+  const fetchUserDetails = async (userId: number) => {
+    setLoading("visible");
+    try {
+      const response = await axios.get(
+        `${apiBaseUrl}/users/${userId}`,
+        {
+          headers: { 'x-access-token': `${tokenGet}` },
+        }
+      );
+
+      if (response.data) {
+        setSelectedUser(response.data);
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      console.error(err.response?.data?.message || "Falha ao buscar detalhes do usuário");
+    } finally {
+      setLoading("");
+    }
+  };
+
+  // Função para abrir o modal com os detalhes do usuário
+  const handleViewUser = async (userId: number) => {
+    await fetchUserDetails(userId);
+    setIsViewUserOpen(true);
+  };
+
+  /* --------------------------------------------------------------------------------------
+  *
+  *  Função para Pesquisar & Listar os usuarios 
+  *  
+  ---------------------------------------------------------------------------------------- */
 
   const search = async () => {
     setLoading("visible");
@@ -165,8 +205,8 @@ function Users() {
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded-full ${user.status === "1"
-                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                    : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                     }`}
                 >
                   {user.status_name || "Unknown"}
@@ -186,13 +226,12 @@ function Users() {
                   <Building className="w-4 h-4 mr-2" />
                   <span className="truncate">{user.company_name}</span>
                 </div>
-
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Último login: {user.last_login}</span>
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => setIsViewUserOpen(true)} data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
+                  <button onClick={() => handleViewUser(user.id)} data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
                   <span className="text-gray-600">|</span>
                   <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Alterar</button>
 
@@ -314,66 +353,91 @@ function Users() {
 
       {/* MODAL 2  View*/}
       {isViewUserOpen && (
-        <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50  flex items-center justify-center z-50">
-          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
+        <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
+          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Detalhes do Cadastro</h3>
-              <button onClick={() => setIsViewUserOpen(false)} data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
+              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white">Detalhes do Cadastro</h3>
+              <button
+                onClick={() => {
+                  setIsViewUserOpen(false);
+                  setSelectedUser(null);
+                }}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
                 <X className="w-6 h-6 dark:text-gray-300" />
               </button>
             </div>
-            <div id="staffDetailsContent" className="text-gray-900 dark:text-white">
-              {/* Staff Header */}
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  JD
-                </div>
-                <div>
-                  <h4 className="text-xl font-display font-bold" >Edson Murilo Arthur Lopes2</h4>
-                  <p className="text-gray-600 dark:text-gray-400 font-body" >Administrator</p>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 mt-1">
-                    Ativo
-                  </span>
-                </div>
-              </div>
 
-              {/* Staff Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Contact Information */}
-                <div className="space-y-4">
-                  <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Informações</h5>
-                  <div className="space-y-2">                    
-                    <div className="flex items-center space-x-2">
-                      <LogIn className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="font-body" >edson.lopes</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="font-body" >john.doe@email.com</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Building className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="font-body" >Clinica Buffet ME</span>
-                    </div>
+            { selectedUser ? (
+              <div id="staffDetailsContent" className="text-gray-900 dark:text-white">
+                {/* Staff Header */}
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                    {getInitials(selectedUser.name)}
                   </div>
-                </div>          
-
-                {/* Recent Activity */}
-                <div className="space-y-4">
-                  <h5 className="font-semibold text-gray-900 dark:text-white font-display" >Último login:</h5>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">                      
-                      <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="font-body" >19/11/2025</span>
-                    </div>
+                  <div>
+                    <h4 className="text-xl font-display font-bold">{selectedUser.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-400 font-body">{selectedUser.level_name}</p>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${selectedUser.status === "1"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+                        : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+                      }`}>
+                      {selectedUser.status_name}
+                    </span>
                   </div>
                 </div>
+
+                {/* Staff Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Contact Information */}
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-gray-900 dark:text-white font-display">Informações</h5>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <LogIn className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="font-body">{selectedUser.login}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Mail className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="font-body">{selectedUser.email}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Building className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="font-body">{selectedUser.company_name}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Activity */}
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-gray-900 dark:text-white font-display">Último login:</h5>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="font-body">{selectedUser.last_login}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => {
+                      setIsViewUserOpen(false);
+                      setSelectedUser(null);
+                    }}
+                    className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body"
+                  >
+                    Fechar
+                  </button>
+                </div>
               </div>
-              {/* Action Buttons */}
-              <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700" >
-                <button onClick={() => setIsViewUserOpen(false)} type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body" >Fechar</button>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                Não foi possível carregar os detalhes do usuário.
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
