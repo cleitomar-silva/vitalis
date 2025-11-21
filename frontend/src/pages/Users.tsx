@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
-  Plus, Mail, Building, LogIn, X, Clock, User
+  Plus, Mail, Building, LogIn, X, Clock
 } from "lucide-react";
 import { can } from "../utils/auth";
 import Preloader from "../components/Preloader";

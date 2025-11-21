@@ -158,9 +158,21 @@ const UserModel = {
 
   async findByID(id: number, companyId: number): Promise<IUser | null> {
     const query = `
-      SELECT *
-      FROM users
-      WHERE id = $1 AND company = $2;
+      SELECT 
+        u.id, 
+        u.name, 
+        u.email, 
+        u.login,
+        TO_CHAR(u.last_login, 'DD/MM/YYYY HH24:MI') AS last_login,
+        l.name AS level_name, 
+        c.name AS company_name, 
+        s.name AS status_name
+      FROM users u
+      INNER JOIN level l ON l.id = u.level
+      INNER JOIN company c ON c.id = u.company
+       INNER JOIN status s ON s.id = u.status
+      
+      WHERE u.id = $1 AND u.company = $2;
     `;
 
     const result = await db.query<IUser>(query, [id, companyId]);
