@@ -19,8 +19,10 @@ function Users() {
   const tokenGet = Cookies.get('auth_token_vitalis');
   const [infoUsers, setinfoUsers] = useState<any[]>([]);
   const [isViewUserOpen, setIsViewUserOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
+ 
  
 
   /* --------------------------------------------------------------------------------------
@@ -176,7 +178,9 @@ function Users() {
             </div>
             {
               canCreate &&
-              <button data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium cursor-pointer">
+              <button 
+                onClick={() => setIsCreateOpen(true)}
+                data-modal-target="addStaffModal" className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition-colors flex items-center space-x-2 font-body font-medium cursor-pointer">
 
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Novo</span>
@@ -257,100 +261,70 @@ function Users() {
         </div>
       </main>
 
-      {/* MODAL 1 */}
-      <div id="addStaffModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Add New Staff</h3>
-            <button data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
-              <i data-lucide="x" className="w-6 h-6 dark:text-gray-300"></i>
-            </button>
+      {/* MODAL 1 create*/}
+      {isCreateOpen && (
+        <div id="addStaffModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
+          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Cadastrar</h3>
+              <button data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
+                <i data-lucide="x" className="w-6 h-6 dark:text-gray-300"></i>
+              </button>
+            </div>
+
+            <form id="addStaffForm" className="space-y-8">
+              {/* Personal Information */}
+              <div>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Informações</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Nome</label>
+                    <input type="text" name="firstName" maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Email</label>
+                    <input type="email" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>                                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Nivel</label>
+                    <select name="gender" className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
+                      <option value=""></option>
+                      <option value="1">Administrador</option>
+                      <option value="2">Recepcionista </option>
+                      <option value="3">Médico</option>                     
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Login</label>
+                    <input type="text" name="lastName" maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div> 
+                 
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Segurança</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Senha *</label>
+                    <input type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Confirmar Senha *</label>
+                    <input type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700" >
+                <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body cursor-pointer" >Cancelar</button>
+                <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer">Cadastrar</button>
+              </div>
+            </form>
           </div>
-
-          <form id="addStaffForm" className="space-y-8">
-            {/* Personal Information */}
-            <div>
-              <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Personal Information</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >First Name *</label>
-                  <input type="text" name="firstName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Last Name *</label>
-                  <input type="text" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Date of Birth *</label>
-                  <input type="date" name="dateOfBirth" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Gender</label>
-                  <select name="gender" className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="prefer-not-to-say">Prefer not to say</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Blood Type</label>
-                  <select name="bloodType" className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
-                    <option value="">Select Blood Type</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Marital Status</label>
-                  <select name="maritalStatus" className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
-                    <option value="">Select Status</option>
-                    <option value="single">Single</option>
-                    <option value="married">Married</option>
-                    <option value="divorced">Divorced</option>
-                    <option value="widowed">Widowed</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div>
-              <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Contact Information</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Phone Number *</label>
-                  <input type="tel" name="phone" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Email Address *</label>
-                  <input type="email" name="email" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Password *</label>
-                  <input type="password" name="password" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Confirm Password *</label>
-                  <input type="password" name="confirm_password" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700" >
-              <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body" >Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors font-body">Add Staff</button>
-            </div>
-          </form>
         </div>
-      </div>
-
+      )}
+      
       {/* MODAL 2  View*/}
       {isViewUserOpen && (
         <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
