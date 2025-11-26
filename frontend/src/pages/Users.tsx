@@ -22,7 +22,41 @@ function Users() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
+
+  /* --------------------------------------------------------------------------------------
+  *
+  *  Função para gravar
+  *  
+  ---------------------------------------------------------------------------------------- */
+
+  const [formCreate, setFormCreate] = useState({ name: "", email: "", level: "", login: "", password: "", passwordConfirm: "" });
  
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    setLoading("visible");
+    try {
+      const response = await axios.post(
+        `${apiBaseUrl}/users/register`,
+        formCreate,
+        {
+          headers: { 'x-access-token': `${tokenGet}` },
+        }
+      );
+
+     
+      if (response.data.id) {
+        setIsCreateOpen(false);
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      console.error(err.response?.data?.message || "Falha ao gravar registro");
+    } finally {
+      setLoading("");
+    }
+
+
+  }
  
 
   /* --------------------------------------------------------------------------------------
@@ -264,30 +298,33 @@ function Users() {
       {/* MODAL 1 create*/}
       {isCreateOpen && (
         <div id="addStaffModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
-          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white" >Cadastrar</h3>
-              <button data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" >
-                <i data-lucide="x" className="w-6 h-6 dark:text-gray-300"></i>
+          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium  w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
+            {/* header */} 
+            <div className="flex items-center justify-between mb-6 p-8 bg-green-500">
+              <h3 className="text-2xl font-display font-bold text-white dark:text-white" >Cadastrar</h3>
+              <button 
+                onClick={() => setIsCreateOpen(false)}
+                data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer" >               
+                <X className="w-6 h-6 dark:text-gray-300" />
               </button>
             </div>
 
-            <form id="addStaffForm" className="space-y-8">
+            <form  onSubmit={handleSubmit} id="form-create" className="space-y-8 p-8">
               {/* Personal Information */}
               <div>
-                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Informações</h4>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700" >Informações</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Nome</label>
-                    <input type="text" name="firstName" maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Nome <span className="text-red-600">*</span></label>
+                    <input onChange={(e) => setFormCreate({ ...formCreate, name: e.target.value })} type="text" name="firstName" maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Email</label>
-                    <input type="email" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Email <span className="text-red-600">*</span></label>
+                    <input onChange={(e) => setFormCreate({ ...formCreate, email: e.target.value })} type="email" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>                                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Nivel</label>
-                    <select name="gender" className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Nivel <span className="text-red-600">*</span></label>
+                    <select  onChange={(e) => setFormCreate({ ...formCreate, level: e.target.value })} name="gender" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
                       <option value=""></option>
                       <option value="1">Administrador</option>
                       <option value="2">Recepcionista </option>
@@ -295,8 +332,8 @@ function Users() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Login</label>
-                    <input type="text" name="lastName" maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Login <span className="text-red-600">*</span></label>
+                    <input onChange={(e) => setFormCreate({ ...formCreate, login: e.target.value })} type="text" name="lastName" maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div> 
                  
                 </div>
@@ -304,23 +341,25 @@ function Users() {
 
               {/* Contact Information */}
               <div>
-                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4" >Segurança</h4>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2" >Segurança</h4>
+              
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Senha *</label>
-                    <input type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Senha <span className="text-red-600">*</span></label>
+                    <input onChange={(e) => setFormCreate({ ...formCreate, password: e.target.value })} type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Confirmar Senha *</label>
-                    <input type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Confirmar Senha <span className="text-red-600">*</span></label>
+                    <input onChange={(e) => setFormCreate({ ...formCreate, passwordConfirm: e.target.value })} type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700" >
-                <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body cursor-pointer" >Cancelar</button>
-                <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer">Cadastrar</button>
-              </div>
+              </div>                         
             </form>
+            <div className="flex items-center justify-end p-8 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">              
+                <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body cursor-pointer mr-3" onClick={() => setIsCreateOpen(false)} >Fechar</button>
+                <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer" form="form-create">Cadastrar</button>              
+            </div>
+
           </div>
         </div>
       )}
