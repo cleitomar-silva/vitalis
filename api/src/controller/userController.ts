@@ -120,11 +120,16 @@ const userController = {
   // --------------------------
   register: async (req: AuthRequest, res: Response) => {
     try {
-      const { name, email, password, level, login } = req.body;
+      const { name, email, password, passwordConfirm, level, login } = req.body;
       const { id: idUserCreated, empresaId } = req.user as any; // token middleware
 
       if (!login || !name || !password || !email || !level || !idUserCreated) {
         return res.status(422).json({ type: "erro", message: "Todos os campos são obrigatórios" });
+      }
+
+      if( password !== passwordConfirm )
+      {
+        return res.status(422).json({ type: "erro", message: "As senhas informadas não correspondem" });
       }
 
       const now = inverterDataHora(new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }));
