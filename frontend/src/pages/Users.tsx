@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
-  Plus, Mail, Building, LogIn, X, Clock
+  Plus, Mail, Building, LogIn, X, Clock, FileEdit 
 } from "lucide-react";
 import { can } from "../utils/auth";
 import Preloader from "../components/Preloader";
@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import { apiBaseUrl } from '../config';
 import axios, { AxiosError } from 'axios';
 import PaginationButtons from "../components/Pagination";
+import ToastWarning from "../components/ToastWarning";
 
 function Users() {
 
@@ -25,6 +26,17 @@ function Users() {
 
   /* --------------------------------------------------------------------------------------
   *
+  * TOAST
+  * 
+  --------------------------------------------------------------------------------------- */
+  const [visibleInfoToastWarning, setVisibleInfoToastWarning] = useState<any | null>(null);
+
+  const handleCloseToastWarning = () => {
+      setVisibleInfoToastWarning(false);
+  };
+
+  /* --------------------------------------------------------------------------------------
+  *
   *  Função para gravar
   *  
   ---------------------------------------------------------------------------------------- */
@@ -33,6 +45,8 @@ function Users() {
  
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    
 
     setLoading("visible");
     try {
@@ -47,10 +61,15 @@ function Users() {
      
       if (response.data.id) {
         setIsCreateOpen(false);
+        // TOAST
+        setVisibleInfoToastWarning(false);
       }
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       console.error(err.response?.data?.message || "Falha ao gravar registro");
+
+      setVisibleInfoToastWarning(err.response?.data?.message);
+
     } finally {
       setLoading("");
     }
@@ -198,6 +217,8 @@ function Users() {
   return (
     <>
       <Preloader visible={loading} />
+      {/* TODO verificar toast: criar um novo */}
+      <ToastWarning visible={visibleInfoToastWarning} onClose={handleCloseToastWarning} />
 
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
 
@@ -300,8 +321,11 @@ function Users() {
         <div id="addStaffModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
           <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium  w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
             {/* header */} 
-            <div className="flex items-center justify-between mb-6 p-8 bg-green-500">
-              <h3 className="text-2xl font-display font-bold text-white dark:text-white" >Cadastrar</h3>
+            <div className="flex items-center justify-between mb-6 p-8 bg-green-500 ">               
+              <h3 className="text-2xl font-display font-bold text-white dark:text-white flex items-center gap-2">
+                <FileEdit  className="w-6 h-6 dark:text-gray-300" />
+                <span>Cadastrar</span>
+              </h3>
               <button 
                 onClick={() => setIsCreateOpen(false)}
                 data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer" >               
@@ -315,15 +339,15 @@ function Users() {
                 <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700" >Informações</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Nome <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Nome</strong> <span className="text-red-600">*</span></label>
                     <input onChange={(e) => setFormCreate({ ...formCreate, name: e.target.value })} type="text" name="firstName" maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Email <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Email</strong> <span className="text-red-600">*</span></label>
                     <input onChange={(e) => setFormCreate({ ...formCreate, email: e.target.value })} type="email" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>                                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Nivel <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Nivel</strong> <span className="text-red-600">*</span></label>
                     <select  onChange={(e) => setFormCreate({ ...formCreate, level: e.target.value })} name="gender" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
                       <option value=""></option>
                       <option value="1">Administrador</option>
@@ -332,7 +356,7 @@ function Users() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body">Login <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Login</strong> <span className="text-red-600">*</span></label>
                     <input onChange={(e) => setFormCreate({ ...formCreate, login: e.target.value })} type="text" name="lastName" maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div> 
                  
@@ -345,11 +369,11 @@ function Users() {
               
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Senha <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Senha</strong> <span className="text-red-600">*</span></label>
                     <input onChange={(e) => setFormCreate({ ...formCreate, password: e.target.value })} type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" >Confirmar Senha <span className="text-red-600">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Confirmar Senha</strong> <span className="text-red-600">*</span></label>
                     <input onChange={(e) => setFormCreate({ ...formCreate, passwordConfirm: e.target.value })} type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                 </div>
