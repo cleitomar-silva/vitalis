@@ -9,7 +9,9 @@ import Cookies from "js-cookie";
 import { apiBaseUrl } from '../config';
 import axios, { AxiosError } from 'axios';
 import PaginationButtons from "../components/Pagination";
-import ToastWarning from "../components/ToastWarning";
+import { useToast } from "../components/ToastContainer";
+
+
 
 function Users() {
 
@@ -24,16 +26,10 @@ function Users() {
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
-  /* --------------------------------------------------------------------------------------
-  *
-  * TOAST
-  * 
-  --------------------------------------------------------------------------------------- */
-  const [visibleInfoToastWarning, setVisibleInfoToastWarning] = useState<any | null>(null);
+  // TOAS
+  const { addToast } = useToast();
 
-  const handleCloseToastWarning = () => {
-      setVisibleInfoToastWarning(false);
-  };
+
 
   /* --------------------------------------------------------------------------------------
   *
@@ -62,13 +58,18 @@ function Users() {
       if (response.data.id) {
         setIsCreateOpen(false);
         // TOAST
-        setVisibleInfoToastWarning(false);
+        addToast("Usuário cadastrado com sucesso!", "success");
+        
+        search();
+       
       }
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
+      addToast(err.response?.data?.message || "Erro ao gravar registro", "error");
+     
       console.error(err.response?.data?.message || "Falha ao gravar registro");
 
-      setVisibleInfoToastWarning(err.response?.data?.message);
+      
 
     } finally {
       setLoading("");
@@ -218,7 +219,7 @@ function Users() {
     <>
       <Preloader visible={loading} />
       {/* TODO verificar toast: criar um novo */}
-      <ToastWarning visible={visibleInfoToastWarning} onClose={handleCloseToastWarning} />
+  
 
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
 
