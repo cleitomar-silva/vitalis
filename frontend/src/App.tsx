@@ -6,6 +6,8 @@ import Sidebar from "./components/Sidebar";
 import ThemeToggle from "./components/ThemeToggle";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { ToastProvider } from "./components/ToastContainer";
+
 
 function App() {
   const location = useLocation();
@@ -35,22 +37,24 @@ function App() {
           <Outlet />
         </>
       ) : (
-        <div className="flex h-screen">
-          {/* Sidebar */}
-          <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+        <ToastProvider>
+          <div className="flex h-screen">
+            {/* Sidebar */}
+            <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
-          {/* Conteúdo principal */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Header onToggleSidebar={toggleSidebar} title={headerTitle} subtitle={headerSubtitle} />
+            {/* Conteúdo principal */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <Header onToggleSidebar={toggleSidebar} title={headerTitle} subtitle={headerSubtitle} />
 
-            {/* content*/}
-            <Outlet context={{ setHeaderTitle, setHeaderSubtitle }} />
+              {/* content*/}
+              <Outlet context={{ setHeaderTitle, setHeaderSubtitle }} />
 
 
-            <Footer />
+              <Footer />
+            </div>
+
           </div>
-
-        </div>
+        </ToastProvider>
       )}
     </>
   );
