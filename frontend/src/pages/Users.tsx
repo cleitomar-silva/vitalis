@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
-  Plus, Mail, Building, LogIn, X, Clock, FileEdit 
+  Plus, Mail, Building, LogIn, X, Clock, FileEdit,  UserPlus 
 } from "lucide-react";
 import { can } from "../utils/auth";
 import Preloader from "../components/Preloader";
@@ -23,10 +23,11 @@ function Users() {
   const [infoUsers, setinfoUsers] = useState<any[]>([]);
   const [isViewUserOpen, setIsViewUserOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isAlterOpen, setIsAlterOpen] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
-  // TOAS
+  // TOAST
   const { addToast } = useToast();
 
 
@@ -150,6 +151,22 @@ function Users() {
       setLoading("");
     }
   };
+
+
+  /* ----------------------------------------------------------------------------------------
+  *
+  * Buscar para Editar 
+  * 
+  * ---------------------------------------------------------------------------------------*/
+
+  const handleAlter = async (userId: number) => {
+    // await fetchUserDetails(userId);
+    setIsAlterOpen(true);
+  };
+
+
+
+
 
   // opcionais
   const getInitials = (name: string) => {
@@ -293,7 +310,7 @@ function Users() {
                 <div className="flex items-center space-x-2">
                   <button onClick={() => handleViewUser(user.id)} data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Ver</button>
                   <span className="text-gray-600">|</span>
-                  <button data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Alterar</button>
+                  <button onClick={()=> handleAlter(user.id)} data-modal-target="staffDetailsModal" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm cursor-pointer">Alterar</button>
 
                 </div>
               </div>
@@ -324,7 +341,7 @@ function Users() {
             {/* header */} 
             <div className="flex items-center justify-between mb-6 p-8 bg-green-500 ">               
               <h3 className="text-2xl font-display font-bold text-white dark:text-white flex items-center gap-2">
-                <FileEdit  className="w-6 h-6 dark:text-gray-300" />
+                <UserPlus  className="w-6 h-6 dark:text-gray-300" />
                 <span>Cadastrar</span>
               </h3>
               <button 
@@ -382,14 +399,14 @@ function Users() {
             </form>
             <div className="flex items-center justify-end p-8 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">              
                 <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body cursor-pointer mr-3" onClick={() => setIsCreateOpen(false)} >Fechar</button>
-                <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer" form="form-create">Cadastrar</button>              
+                <button type="submit" className="px-6 py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer" form="form-create">Gravar</button>              
             </div>
 
           </div>
         </div>
       )}
       
-      {/* MODAL 2  View*/}
+      {/* MODAL 2  View */}
       {isViewUserOpen && (
         <div id="staffDetailsModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
           <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium p-8 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
@@ -476,6 +493,78 @@ function Users() {
                 Não foi possível carregar os detalhes do usuário.
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+       {/* MODAL 3 Alter */}
+      {isAlterOpen && (
+        <div id="addStaffModal" className="tw-modal fixed inset-0 bg-[#000000d1] bg-opacity-50 flex items-center justify-center z-50">
+          <div className="tw-modal-dialog bg-white dark:bg-gray-800 rounded-2xl shadow-premium  w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" >
+            {/* header */} 
+            <div className="flex items-center justify-between mb-6 p-8 bg-yellow-500 ">               
+              <h3 className="text-2xl font-display font-bold text-white dark:text-white flex items-center gap-2">
+                <FileEdit  className="w-6 h-6 dark:text-gray-300" />
+                <span>Alterar</span>
+              </h3>
+              <button 
+                onClick={() => setIsAlterOpen(false)}
+                data-modal-close className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer" >               
+                <X className="w-6 h-6 dark:text-gray-300" />
+              </button>
+            </div>
+
+            <form  id="form-create" className="space-y-8 p-8">
+              {/* Personal Information */}
+              <div>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700" >Informações</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Nome</strong> <span className="text-red-600">*</span></label>
+                    <input type="text" name="firstName" maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Email</strong> <span className="text-red-600">*</span></label>
+                    <input  type="email" name="lastName" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>                                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Nivel</strong> <span className="text-red-600">*</span></label>
+                    <select  name="gender" required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
+                      <option value=""></option>
+                      <option value="1">Administrador</option>
+                      <option value="2">Recepcionista </option>
+                      <option value="3">Médico</option>                     
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Login</strong> <span className="text-red-600">*</span></label>
+                    <input  type="text" name="lastName" maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div> 
+                 
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div>
+                <h4 className="text-lg font-display font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2" >Segurança</h4>
+              
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Senha</strong> <span className="text-red-600">*</span></label>
+                    <input  type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Confirmar Senha</strong> <span className="text-red-600">*</span></label>
+                    <input  type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                  </div>
+                </div>
+              </div>                         
+            </form>
+            <div className="flex items-center justify-end p-8 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">              
+                <button type="button" data-modal-close className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-body cursor-pointer mr-3" onClick={() => setIsAlterOpen(false)} >Fechar</button>
+                <button type="submit" className="px-6 py-3 bg-yellow-500 text-white rounded-xl font-medium hover:bg-green-500 transition-colors font-body cursor-pointer" form="form-create">Gravar</button>              
+            </div>
+
           </div>
         </div>
       )}
