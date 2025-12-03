@@ -168,6 +168,7 @@ const UserModel = {
         u.name, 
         u.email, 
         u.login,
+        u.level,
         u.status,
         TO_CHAR(u.last_login, 'DD/MM/YYYY HH24:MI') AS last_login,
         l.name AS level_name, 
