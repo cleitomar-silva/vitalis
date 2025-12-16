@@ -15,6 +15,21 @@ import { useToast } from "../components/ToastContainer";
 
 function Users() {
 
+    const formAlter = {
+        company_name: '',
+        email: '',
+        id: '',
+        last_login: '',
+        level: '',
+        level_name: '',
+        login: '',
+        name: '',
+        status: '',
+        status_name: '',
+        senha: '',
+        confirmSenha: ''
+    };
+
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0); // novo estado
@@ -78,11 +93,66 @@ function Users() {
 
 
   }
+
+
+  /* ---------------------------------------------------------------------------------------
+  *
+  * Para editar
+  * 
+  --------------------------------------------------------------------------------------- */
  
+  const handleSubmitAlter = async (e: any) => {
+    e.preventDefault();
+
+    if(selectedUser.password !== selectedUser.confirmPass ){
+      // TOAST
+      addToast("As senhas informadas não coincidem. Verifique e tente novamente.", "error");
+      return;
+    }    
+
+    setLoading("visible");
+    try
+    {
+
+      const response = await axios.put(
+        `${apiBaseUrl}/users/update`,
+        selectedUser,
+        {
+          headers: { 'x-access-token': `${tokenGet}` },
+        }
+      );
+
+      if (response.data.id) {
+        setIsAlterOpen(false);        
+        // TOAST
+        addToast(response.data.message, "success");
+        
+        search();
+       
+      }
+
+    }
+    catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      addToast(err.response?.data?.message || "Erro ao gravar registro", "error");
+     
+      console.error(err.response?.data?.message || "Falha ao gravar registro");      
+
+    }
+    finally
+    {
+      setLoading("");
+    }
+
+
+
+
+  }
+
 
   /* --------------------------------------------------------------------------------------
   *
-  *  Função para buscar os detalhes do usuário 
+  *  Buscar os detalhes do usuário 
   *  
   ---------------------------------------------------------------------------------------- */
   const fetchUserDetails = async (userId: number) => {
@@ -96,6 +166,10 @@ function Users() {
       );
 
       if (response.data) {
+
+        response.data.password = "";
+        response.data.confirmPass = "";
+
         setSelectedUser(response.data);
       }
     } catch (error) {
@@ -517,7 +591,7 @@ function Users() {
               </button>
             </div>
 
-            <form  id="form-create" className="space-y-8 p-8">
+            <form  id="form-create"  onSubmit={handleSubmitAlter} className="space-y-8 p-8">
               {/* Personal Information */}
               <input type="hidden" defaultValue={selectedUser.id} />
               <div>
@@ -525,15 +599,24 @@ function Users() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Nome</strong> <span className="text-red-600">*</span></label>
-                    <input type="text" name="firstName" defaultValue={selectedUser.name} maxLength={255} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <input type="text" name="firstName"                     
+                      defaultValue={selectedUser.name} maxLength={255} 
+                      onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}   
+                      required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Email</strong> <span className="text-red-600">*</span></label>
-                    <input  type="email" name="lastName" defaultValue={selectedUser.email} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <input  type="email" name="lastName" 
+                      defaultValue={selectedUser.email} 
+                      onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })} 
+                      required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>                                  
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Nivel</strong> <span className="text-red-600">*</span></label>
-                    <select  name="gender" required  defaultValue={selectedUser.level}  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
+                    <select  name="gender" required  
+                        defaultValue={selectedUser.level} 
+                        onChange={(e) => setSelectedUser({ ...selectedUser, level: e.target.value })} 
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" >
                       <option value=""></option>
                       <option value="1">Administrador</option>
                       <option value="2">Recepcionista </option>
@@ -542,7 +625,10 @@ function Users() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body"><strong>Login</strong> <span className="text-red-600">*</span></label>
-                    <input  type="text" name="lastName" defaultValue={selectedUser.login} maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <input  type="text" name="lastName" 
+                    defaultValue={selectedUser.login} 
+                     onChange={(e) => setSelectedUser({ ...selectedUser, login: e.target.value })} 
+                    maxLength={100} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div> 
                  
                 </div>
@@ -555,11 +641,17 @@ function Users() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Senha</strong> <span className="text-red-600">*</span></label>
-                    <input  type="password" name="password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <input  type="password" name="password" 
+                 
+                    onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })} 
+                    maxLength={20} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-body" ><strong>Confirmar Senha</strong> <span className="text-red-600">*</span></label>
-                    <input  type="password" name="confirm_password" maxLength={20} required className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
+                    <input  type="password" name="confirm_password"                     
+                    
+                    onChange={(e) => setSelectedUser({ ...selectedUser, confirmPass: e.target.value })} 
+                    maxLength={20} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-body bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" />
                   </div>
                 </div>
               </div>                         
